@@ -203,12 +203,18 @@ function JobsPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [term, expertiseFilter]);
 
-  // No expertise filter: slowly crossfade through the four hero workshops.
+  // Cycle every workshop background every 4 seconds (Find Jobs + Find Talent).
   useEffect(() => {
-    if (expertiseFilter) return;
-    const id = window.setInterval(() => setSlide((value) => (value + 1) % SLIDESHOW_BGS.length), 6000);
+    const id = window.setInterval(() => setSlide((value) => (value + 1) % SLIDESHOW_BGS.length), 4000);
     return () => window.clearInterval(id);
-  }, [expertiseFilter]);
+  }, []);
+  // Preload so each slide appears instantly.
+  useEffect(() => {
+    SLIDESHOW_BGS.forEach((src) => {
+      const img = new Image();
+      img.src = src;
+    });
+  }, []);
 
   const talentBg = expertiseFilter ? getBg(expertiseFilter) : SLIDESHOW_BGS[slide]!;
 
@@ -441,7 +447,8 @@ function JobsPage() {
             action={<Button onClick={() => setJobFormOpen(true)}>Post a Job</Button>}
           />
         ) : (
-          <ul className="space-y-4 p-4">
+          <div className="talent-feed-wrapper min-h-[60vh]" style={{ backgroundImage: `url(${SLIDESHOW_BGS[slide]})` }}>
+          <ul className="talent-cards-layer space-y-4 p-4">
             {visibleJobs.map((job) => (
               <AdminLongPressDelete
                 key={job.id}
@@ -465,6 +472,7 @@ function JobsPage() {
               </AdminLongPressDelete>
             ))}
           </ul>
+          </div>
         )
       ) : (
         <div className="talent-feed-wrapper min-h-[60vh]" style={{ backgroundImage: `url(${talentBg})` }}>

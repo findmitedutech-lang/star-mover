@@ -29,7 +29,8 @@ import {
   markDelivered,
   setMessageStarred,
 } from "@/lib/chat-prefs";
-import wallpaper from "@/assets/findmit-chat-wallpaper-3.jpg.asset.json";
+import wallpaperSrc from "@/assets/chat-wallpaper.jpg";
+const wallpaper = { url: wallpaperSrc };
 import {
   fetchMessages,
   fetchMessagesBefore,

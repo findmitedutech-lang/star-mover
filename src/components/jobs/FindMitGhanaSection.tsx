@@ -3,7 +3,7 @@ import { AdminLongPressDelete } from "@/components/admin/AdminLongPressDelete";
 import { useRole } from "@/lib/roles";
 import { useNavigate } from "@tanstack/react-router";
 import { BadgeCheck, Building2, HeartHandshake, Lock, MapPin, ShieldCheck, Sparkles, Users } from "lucide-react";
-import heroAsset from "@/assets/findmit-ghana-hero.jpg.asset.json";
+const heroAsset = { url: "/images/accra-office-ghana.jpg" };
 import { UserAvatar } from "@/components/UserAvatar";
 import { Button } from "@/components/ui/button";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
