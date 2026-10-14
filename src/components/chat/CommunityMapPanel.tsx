@@ -113,22 +113,28 @@ export function CommunityMapPanel({
         .eq("subscription_status", "active")
         .gt("subscription_expires_at", new Date().toISOString())
         .not("lat", "is", null)
-        .limit(10);
-      void (q.startsWith("@") ? shopQ.ilike("handle", `${term}%`) : shopQ.or(`handle.ilike.%${term}%,name.ilike.%${term}%`)).then(
-        ({ data }: { data: Record<string, unknown>[] | null }) =>
-          setShopResults(
-            (data ?? []).map((r) => ({
-              id: String(r["id"]),
-              handle: String(r["handle"]),
-              name: String(r["name"]),
-              lat: Number(r["lat"]),
-              lng: Number(r["lng"]),
-              landmark: (r["landmark"] as string | null) ?? null,
-              category: String(r["category"]),
-              distance: searchHere ? distanceM(searchHere.lat, searchHere.lng, Number(r["lat"]), Number(r["lng"])) : null,
-            })),
-          ),
-      );
+        .limit(200);
+      void (q.startsWith("@")
+        ? shopQ.ilike("handle", `${term}%`)
+        : shopQ.or(`handle.ilike.%${term}%,name.ilike.%${term}%,category.ilike.%${term}%`)
+      ).then(({ data }: { data: Record<string, unknown>[] | null }) => {
+        const all = (data ?? []).map((r) => ({
+          id: String(r["id"]),
+          handle: String(r["handle"]),
+          name: String(r["name"]),
+          lat: Number(r["lat"]),
+          lng: Number(r["lng"]),
+          landmark: (r["landmark"] as string | null) ?? null,
+          category: String(r["category"]),
+          distance: searchHere ? distanceM(searchHere.lat, searchHere.lng, Number(r["lat"]), Number(r["lng"])) : null,
+        }));
+        const near = (a: { distance: number | null }, b: { distance: number | null }) =>
+          (a.distance ?? 1e12) - (b.distance ?? 1e12);
+        // Shop name/handle matches are shown directly; need searches (e.g. "mechanic") give the 3 nearest.
+        const named = all.filter((s) => s.name.toLowerCase().includes(term) || s.handle.toLowerCase().includes(term)).sort(near);
+        const byNeed = all.filter((s) => !named.includes(s)).sort(near).slice(0, 3);
+        setShopResults([...named.slice(0, 10), ...byNeed]);
+      });
       void supabase
         .from("community_names")
         .select("*")
