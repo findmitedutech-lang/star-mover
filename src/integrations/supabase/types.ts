@@ -3802,6 +3802,7 @@ export type Database = {
         Returns: boolean
       }
       is_shop_handle_available: { Args: { _handle: string }; Returns: boolean }
+      is_shop_name_available: { Args: { _name: string }; Returns: boolean }
       is_super_admin: { Args: never; Returns: boolean }
       match_ges_vault_jhs: {
         Args: {
