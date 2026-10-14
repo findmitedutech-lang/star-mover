@@ -12,7 +12,9 @@ import { useAppPrice } from "@/lib/pricing";
 import { captureAccurateLocation } from "@/lib/community-map";
 import { startShopCheckout } from "@/lib/shop.functions";
 import {
+  CUSTOM_CATEGORY,
   SHOP_CATEGORIES,
+  isPoliceShop,
   daysLeft,
   isShopActive,
   isValidHandle,
@@ -100,6 +102,8 @@ function RegisterForm({ userId, onCreated }: { userId: string; onCreated: () => 
   const [available, setAvailable] = useState<boolean | null>(null);
   const [name, setName] = useState("");
   const [category, setCategory] = useState("food");
+  const [customCategory, setCustomCategory] = useState("");
+  const [nameFree, setNameFree] = useState<boolean | null>(null);
   const [phone, setPhone] = useState("");
   const [landmark, setLandmark] = useState("");
   const [description, setDescription] = useState("");
@@ -123,6 +127,20 @@ function RegisterForm({ userId, onCreated }: { userId: string; onCreated: () => 
     return () => window.clearTimeout(t);
   }, [h, valid]);
 
+  useEffect(() => {
+    setNameFree(null);
+    const n = name.trim();
+    if (n.length < 2) return undefined;
+    const t = window.setTimeout(async () => {
+      const { data } = await (supabase as unknown as { rpc: (f: string, a: unknown) => Promise<{ data: boolean }> }).rpc(
+        "is_shop_name_available",
+        { _name: n },
+      );
+      setNameFree(Boolean(data));
+    }, 350);
+    return () => window.clearTimeout(t);
+  }, [name]);
+
   const locate = async () => {
     setLocating(true);
     const r = await captureAccurateLocation();
@@ -134,6 +152,9 @@ function RegisterForm({ userId, onCreated }: { userId: string; onCreated: () => 
   const save = async () => {
     if (!valid || !available) return void toast.error("Choose an available shop name");
     if (!name.trim() || !phone.trim()) return void toast.error("Add your shop name and phone number");
+    if (nameFree === false) return void toast.error("That business name is unavailable — please change it");
+    const finalCategory = category === CUSTOM_CATEGORY ? customCategory.trim() : category;
+    if (!finalCategory) return void toast.error("Write your category (e.g. Mechanic)");
     if (!gps) return void toast.error("Capture your shop's location while standing at the door");
     setSaving(true);
     try {
@@ -142,7 +163,7 @@ function RegisterForm({ userId, onCreated }: { userId: string; onCreated: () => 
         owner_id: userId,
         handle: h,
         name: name.trim(),
-        category,
+        category: finalCategory,
         phone: phone.trim(),
         landmark: landmark.trim() || null,
         description: description.trim() || null,
@@ -193,7 +214,18 @@ function RegisterForm({ userId, onCreated }: { userId: string; onCreated: () => 
                   : "Checking…"}
         </span>
       </label>
-      <Input value={name} onChange={(e) => setName(e.target.value)} placeholder="Business name (e.g. Ama's Kitchen)" />
+      <div>
+        <div className="relative">
+          <Input value={name} onChange={(e) => setName(e.target.value)} placeholder="Business name (e.g. Ama's Kitchen)" />
+          {nameFree === true ? <Check className="absolute right-3 top-3 size-4 text-wa-green" /> : null}
+          {nameFree === false ? <X className="absolute right-3 top-3 size-4 text-destructive" /> : null}
+        </div>
+        {nameFree === false ? (
+          <p className="mt-1 text-xs text-destructive">Unavailable — this name is already taken. Please choose another.</p>
+        ) : nameFree === true ? (
+          <p className="mt-1 text-xs text-wa-green">Available</p>
+        ) : null}
+      </div>
       <select
         className="h-10 w-full rounded-md border border-input bg-background px-3 text-sm"
         value={category}
@@ -204,7 +236,11 @@ function RegisterForm({ userId, onCreated }: { userId: string; onCreated: () => 
             {c.emoji} {c.label}
           </option>
         ))}
+        <option value={CUSTOM_CATEGORY}>✏️ Write yours…</option>
       </select>
+      {category === CUSTOM_CATEGORY ? (
+        <Input value={customCategory} onChange={(e) => setCustomCategory(e.target.value)} placeholder="Write your category (e.g. Mechanic)" />
+      ) : null}
       <Input value={phone} onChange={(e) => setPhone(e.target.value)} type="tel" placeholder="Phone for orders (e.g. 024 123 4567)" />
       <Input value={landmark} onChange={(e) => setLandmark(e.target.value)} placeholder="Landmark (e.g. opposite Total filling station)" />
       <textarea
@@ -222,7 +258,7 @@ function RegisterForm({ userId, onCreated }: { userId: string; onCreated: () => 
         <Camera className="size-4" /> {photo ? photo.name : "Add a shop front photo"}
         <input type="file" accept="image/*" className="hidden" onChange={(e) => setPhoto(e.target.files?.[0] ?? null)} />
       </label>
-      <Button className="w-full" onClick={() => void save()} disabled={saving}>
+      <Button className="w-full" onClick={() => void save()} disabled={saving || available === false || nameFree === false}>
         {saving ? "Saving…" : `Continue to register — ${regWaived ? "Free" : `GH₵ ${regAmount}`}`}
       </Button>
     </section>
@@ -361,6 +397,12 @@ function ManageShop({ shop, userId }: { shop: Shop; userId: string }) {
         </div>
       </section>
 
+      {isPoliceShop(shop) ? (
+        <p className="rounded-2xl bg-card p-4 text-sm text-muted-foreground shadow-sm">
+          Police stations don't list products. Customers see your station name, location and a Call Police button.
+        </p>
+      ) : (
+      <>
       <section className="space-y-3 rounded-2xl bg-card p-4 shadow-sm">
         <p className="font-display font-bold">Add a product or service</p>
         <Input value={name} onChange={(e) => setName(e.target.value)} placeholder="Name (e.g. Jollof with chicken)" />
@@ -411,6 +453,8 @@ function ManageShop({ shop, userId }: { shop: Shop; userId: string }) {
           </div>
         ))}
       </section>
+      </>
+      )}
     </>
   );
 }
