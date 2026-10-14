@@ -1,3 +1,4 @@
+CREATE OR REPLACE FUNCTION public.adjust_live_viewer_count(_session_id uuid, _delta integer) RETURNS integer LANGUAGE sql SECURITY DEFINER SET search_path = public AS $$ UPDATE public.live_sessions SET viewer_count = GREATEST(viewer_count + _delta, 0) WHERE id = _session_id AND is_live RETURNING viewer_count $$;
 CREATE TABLE public.wallet_packages (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   title text NOT NULL DEFAULT 'Package',
