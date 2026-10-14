@@ -4,6 +4,7 @@ import { useServerFn } from "@tanstack/react-start";
 import { CheckCircle2, Loader2, XCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { completePaystackCheckout } from "@/lib/checkout.functions";
+import { completeShopCheckout } from "@/lib/shop.functions";
 
 export const Route = createFileRoute("/payment-verify")({
   head: () => ({
@@ -23,6 +24,8 @@ export const Route = createFileRoute("/payment-verify")({
 function PaymentVerifyPage() {
   const navigate = useNavigate();
   const complete = useServerFn(completePaystackCheckout);
+  const completeShop = useServerFn(completeShopCheckout);
+  const [shopHandle, setShopHandle] = useState<string | null>(null);
   const search = useRouterState({ select: (state) => state.location.search }) as Record<string, string>;
   const reference = search["reference"] ?? search["trxref"] ?? "";
   const [state, setState] = useState<"checking" | "done" | "failed">("checking");
@@ -36,6 +39,19 @@ function PaymentVerifyPage() {
     if (!reference) {
       setState("failed");
       setMessage("We could not find this payment.");
+      return;
+    }
+    if (reference.startsWith("fm_shop_")) {
+      void completeShop({ data: { reference } })
+        .then((r) => {
+          setShopHandle(r.handle);
+          setState("done");
+          setMessage(`Payment received — @${r.handle} is live for one year.`);
+        })
+        .catch((error: unknown) => {
+          setState("failed");
+          setMessage(error instanceof Error ? error.message : "Payment could not be confirmed.");
+        });
       return;
     }
     void complete({ data: { reference } })
@@ -61,7 +77,12 @@ function PaymentVerifyPage() {
       {state === "done" && <CheckCircle2 className="h-12 w-12 text-emerald-500" />}
       {state === "failed" && <XCircle className="h-12 w-12 text-destructive" />}
       <p className="max-w-sm text-base font-medium text-foreground">{message}</p>
-      {state !== "checking" && (
+      {state !== "checking" && reference.startsWith("fm_shop_") ? (
+        <Button className="rounded-full" onClick={() => navigate({ to: "/my-shop" })}>
+          {shopHandle ? "Manage my shop" : "Back to my shop"}
+        </Button>
+      ) : null}
+      {state !== "checking" && !reference.startsWith("fm_shop_") && (
         <Button
           className="rounded-full"
           onClick={() =>

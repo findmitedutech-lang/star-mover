@@ -11,7 +11,10 @@ import {
   Trophy,
   Volume2,
   ThumbsUp,
+  Store,
 } from "lucide-react";
+import { Link, useNavigate } from "@tanstack/react-router";
+import { categoryEmoji } from "@/lib/shops";
 import { CommunityMapView, type MapRoad } from "@/components/chat/CommunityMapView";
 import type { NavTarget } from "@/components/chat/LiveNavigation";
 import { SatelliteTracer } from "@/components/chat/SatelliteTracer";
@@ -80,11 +83,16 @@ export function CommunityMapPanel({
     }[]
   >([]);
   const [searchHere, setSearchHere] = useState<{ lat: number; lng: number } | null>(null);
+  const [shopResults, setShopResults] = useState<
+    { id: string; handle: string; name: string; lat: number; lng: number; landmark: string | null; category: string; distance: number | null }[]
+  >([]);
+  const navigateTo = useNavigate();
   const hereAsked = useRef(false);
   useEffect(() => {
     const q = search.trim();
     if (q.length < 2) {
       setResults([]);
+      setShopResults([]);
       return;
     }
     if (!hereAsked.current && navigator.geolocation) {
@@ -96,6 +104,30 @@ export function CommunityMapPanel({
       );
     }
     const t = window.setTimeout(() => {
+      // Paid shops only (RLS hides unpaid/expired ones). "@ama" searches handles.
+      const term = q.replace(/^@+/, "").toLowerCase().replace(/[%,()]/g, "");
+      const shopQ = (supabase as unknown as { from: (t: string) => any })
+        .from("shops")
+        .select("id, handle, name, lat, lng, landmark, category, subscription_status, subscription_expires_at")
+        .eq("subscription_status", "active")
+        .gt("subscription_expires_at", new Date().toISOString())
+        .not("lat", "is", null)
+        .limit(10);
+      void (q.startsWith("@") ? shopQ.ilike("handle", `${term}%`) : shopQ.or(`handle.ilike.%${term}%,name.ilike.%${term}%`)).then(
+        ({ data }: { data: Record<string, unknown>[] | null }) =>
+          setShopResults(
+            (data ?? []).map((r) => ({
+              id: String(r["id"]),
+              handle: String(r["handle"]),
+              name: String(r["name"]),
+              lat: Number(r["lat"]),
+              lng: Number(r["lng"]),
+              landmark: (r["landmark"] as string | null) ?? null,
+              category: String(r["category"]),
+              distance: searchHere ? distanceM(searchHere.lat, searchHere.lng, Number(r["lat"]), Number(r["lng"])) : null,
+            })),
+          ),
+      );
       void supabase
         .from("community_names")
         .select("*")
@@ -485,13 +517,56 @@ export function CommunityMapPanel({
         {tab === "map" ? (
           <>
             <div className="rounded-2xl bg-card p-4 shadow-sm">
-              <p className="text-sm font-semibold">Find a place</p>
+              <div className="flex items-center justify-between">
+                <p className="text-sm font-semibold">Find a place</p>
+                <Link to="/my-shop" className="text-xs font-medium text-wa-green">+ Register your shop</Link>
+              </div>
               <Input
                 className="mt-2"
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                placeholder="Search shop name or FindMit GPS (e.g. 4D81Y+FJ)"
+                placeholder="Search @shop, place name or FindMit GPS (e.g. 4D81Y+FJ)"
               />
+              {shopResults.length ? (
+                <ul className="mt-2 space-y-2">
+                  {shopResults.map((s) => (
+                    <li key={s.id} className="rounded-xl border border-border p-2">
+                      <div className="flex items-center gap-2">
+                        <span className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-muted text-lg">
+                          {categoryEmoji(s.category)}
+                        </span>
+                        <span className="min-w-0 flex-1">
+                          <span className="block truncate text-sm font-medium">{s.name}</span>
+                          <span className="block truncate text-xs text-muted-foreground">
+                            @{s.handle}
+                            {s.distance != null
+                              ? ` · ${s.distance >= 1000 ? `${(s.distance / 1000).toFixed(1)} km` : `${Math.round(s.distance)} m`}`
+                              : ""}
+                            {s.landmark ? ` · ${s.landmark}` : ""}
+                          </span>
+                        </span>
+                      </div>
+                      <div className="mt-2 flex gap-2">
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          className="flex-1"
+                          onClick={() => onNavigate?.({ lat: s.lat, lng: s.lng, label: s.name, landmark: s.landmark ?? undefined })}
+                        >
+                          <Navigation className="size-4" /> Directions
+                        </Button>
+                        <Button
+                          size="sm"
+                          className="flex-1"
+                          onClick={() => void navigateTo({ to: "/$handle", params: { handle: `@${s.handle}` } })}
+                        >
+                          <Store className="size-4" /> Enter Shop
+                        </Button>
+                      </div>
+                    </li>
+                  ))}
+                </ul>
+              ) : null}
               {decoded ? (
                 <div className="mt-2 flex items-center gap-2 rounded-xl bg-muted p-2">
                   <MapPin className="size-4 shrink-0 text-wa-green" />

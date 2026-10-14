@@ -13,6 +13,7 @@ const NAMES: Record<string, string> = {
   talent_employ: "Employ talent",
   classroom_raise: "Raise hand in live class",
   tutor_monthly: "AI tutor (Practice + Ask Ama)",
+  shop_registration: "Shop registration (yearly)",
 };
 
 const table = () => (supabase as unknown as { from: (t: string) => any }).from("app_pricing");
