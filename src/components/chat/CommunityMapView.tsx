@@ -39,6 +39,10 @@ export function CommunityMapView({
   onMapTap,
   shops = [],
   onShopTap,
+  me,
+  follow,
+  rotate,
+  onUserDrag,
 }: {
   center: { lat: number; lng: number };
   pin?: { lat: number; lng: number } | null;
@@ -49,6 +53,13 @@ export function CommunityMapView({
   onMapTap?: (lat: number, lng: number) => void;
   shops?: MapShop[];
   onShopTap?: (id: string) => void;
+  /** Live user marker with heading arrow. */
+  me?: { lat: number; lng: number; heading?: number | null } | null;
+  /** When set, the camera keeps panning to this point. */
+  follow?: { lat: number; lng: number } | null;
+  /** Heading-up: rotates the map so this bearing points up. */
+  rotate?: number;
+  onUserDrag?: () => void;
 }) {
   const boxRef = useRef<HTMLDivElement | null>(null);
   const mapRef = useRef<L.Map | null>(null);
@@ -61,6 +72,8 @@ export function CommunityMapView({
   tapRef.current = onMapTap;
   const shopTapRef = useRef(onShopTap);
   shopTapRef.current = onShopTap;
+  const dragRef = useRef(onUserDrag);
+  dragRef.current = onUserDrag;
 
   useEffect(() => {
     let cancelled = false;
@@ -157,15 +170,55 @@ export function CommunityMapView({
       pinRef.current.remove();
       pinRef.current = null;
     }
+    if (me) {
+      const icon = lib.divIcon({
+        className: "",
+        html: `<div style="position:relative;width:44px;height:44px"><div style="position:absolute;inset:0;border-radius:50%;background:rgba(37,99,235,.25);animation:fmPulse 1.6s ease-out infinite"></div><div style="position:absolute;left:50%;top:50%;width:22px;height:22px;margin:-11px 0 0 -11px;border-radius:50%;background:#2563eb;border:3px solid #fff;box-shadow:0 2px 6px rgba(0,0,0,.4)"></div><div style="position:absolute;left:50%;top:-6px;margin-left:-8px;width:0;height:0;border-left:8px solid transparent;border-right:8px solid transparent;border-bottom:14px solid #2563eb;transform-origin:8px 28px;transform:rotate(${me.heading ?? 0}deg)"></div></div><style>@keyframes fmPulse{0%{transform:scale(.6);opacity:1}100%{transform:scale(1.6);opacity:0}}</style>`,
+        iconSize: [44, 44],
+        iconAnchor: [22, 22],
+      });
+      lib.marker([me.lat, me.lng], { icon, interactive: false, zIndexOffset: 1000 }).addTo(layer);
+    }
   }
 
-  useEffect(draw, [pin?.lat, pin?.lng, places, roads, shops]); // eslint-disable-line react-hooks/exhaustive-deps
+  useEffect(draw, [pin?.lat, pin?.lng, places, roads, shops, me?.lat, me?.lng, me?.heading]); // eslint-disable-line react-hooks/exhaustive-deps
 
+  // Follow mode: keep the camera on the user as they move.
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map || !follow) return;
+    map.panTo([follow.lat, follow.lng], { animate: true, duration: 0.8 });
+  }, [follow?.lat, follow?.lng]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map) return;
+    const stop = () => dragRef.current?.();
+    map.on("dragstart", stop);
+    return () => {
+      map.off("dragstart", stop);
+    };
+  });
+
+  const rot = rotate ?? 0;
   return (
-    <div
-      ref={boxRef}
-      style={{ height }}
-      className="relative z-0 w-full overflow-hidden rounded-xl border border-border bg-muted"
-    />
+    <div style={{ height }} className="relative z-0 w-full overflow-hidden rounded-xl border border-border bg-muted">
+      <div
+        ref={boxRef}
+        style={
+          rotate === undefined
+            ? { height: "100%", width: "100%" }
+            : {
+                position: "absolute",
+                width: "150%",
+                height: "150%",
+                left: "-25%",
+                top: "-25%",
+                transform: `rotate(${-rot}deg)`,
+                transition: "transform 0.8s ease-out",
+              }
+        }
+      />
+    </div>
   );
 }

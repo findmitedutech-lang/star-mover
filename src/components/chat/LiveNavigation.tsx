@@ -42,7 +42,7 @@ function fmt(m: number) {
 
 /** Live GPS tracking from the user's position to a shared destination. */
 export function LiveNavigation({ target, onClose }: { target: NavTarget; onClose: () => void }) {
-  const [me, setMe] = useState<{ lat: number; lng: number; acc: number; speed: number | null } | null>(null);
+  const [me, setMe] = useState<{ lat: number; lng: number; acc: number; speed: number | null; heading: number | null } | null>(null);
   const [trail, setTrail] = useState<[number, number][]>([]);
   const [arrived, setArrived] = useState(false);
   const [follow, setFollow] = useState(0);
@@ -148,6 +148,7 @@ export function LiveNavigation({ target, onClose }: { target: NavTarget; onClose
           lng: pos.coords.longitude,
           acc: pos.coords.accuracy,
           speed: pos.coords.speed,
+          heading: pos.coords.heading,
         };
         setMe(p);
         setTrail((t) => [...t.slice(-500), [p.lat, p.lng]]);
@@ -190,11 +191,47 @@ export function LiveNavigation({ target, onClose }: { target: NavTarget; onClose
     return r;
   }, [trail, me, road, target.lat, target.lng]);
 
-  const places = [
-    ...photos.map((p) => ({ id: p.id, lat: p.lat, lng: p.lng, label: p.name, verified: p.verified, photo: true })),
-    ...(me ? [{ id: "me", lat: me.lat, lng: me.lng, label: "You", verified: true }] : []),
-  ];
-  const center = me && follow > 0 ? { lat: me.lat, lng: me.lng } : { lat: target.lat, lng: target.lng };
+  const places = photos.map((p) => ({ id: p.id, lat: p.lat, lng: p.lng, label: p.name, verified: p.verified, photo: true }));
+  const center = me ? { lat: me.lat, lng: me.lng } : { lat: target.lat, lng: target.lng };
+
+  // Heading-up: look ~25m ahead along the route so the map turns with road curves.
+  const heading = useMemo(() => {
+    if (!me) return 0;
+    const pts = road?.points;
+    if (pts && pts.length > 1) {
+      let bi = 0;
+      let bd = Infinity;
+      pts.forEach(([la, ln], i) => {
+        const d = distanceM(me.lat, me.lng, la, ln);
+        if (d < bd) {
+          bd = d;
+          bi = i;
+        }
+      });
+      if (bd < 60) {
+        for (let i = bi + 1; i < pts.length; i++) {
+          if (distanceM(me.lat, me.lng, pts[i]![0], pts[i]![1]) >= 25)
+            return bearing(me.lat, me.lng, pts[i]![0], pts[i]![1]);
+        }
+      }
+    }
+    if (me.heading != null && !Number.isNaN(me.heading) && (me.speed ?? 0) > 0.8) return me.heading;
+    if (trail.length > 1) {
+      const a = trail[Math.max(0, trail.length - 4)]!;
+      if (distanceM(a[0], a[1], me.lat, me.lng) > 4) return bearing(a[0], a[1], me.lat, me.lng);
+    }
+    return bearing(me.lat, me.lng, target.lat, target.lng);
+  }, [me, road, trail, target.lat, target.lng]);
+  // Smooth rotation: unwrap to avoid spinning the long way round 0/360.
+  const rotRef = useRef(0);
+  const rot = useMemo(() => {
+    let d = heading - (rotRef.current % 360);
+    if (d > 180) d -= 360;
+    if (d < -180) d += 360;
+    if (Math.abs(d) > 8) rotRef.current += d;
+    return rotRef.current;
+  }, [heading]);
+  const following = follow >= 0;
 
   return (
     <div className="flex h-full min-h-0 flex-col bg-wa-panel">
@@ -213,18 +250,22 @@ export function LiveNavigation({ target, onClose }: { target: NavTarget; onClose
 
       <div className="relative min-h-0 flex-1 p-2">
         <CommunityMapView
-          key={follow}
+          key={me ? "me" : "wait"}
           center={center}
           pin={{ lat: target.lat, lng: target.lng }}
           places={places}
           roads={roads}
+          me={me ? { lat: me.lat, lng: me.lng, heading: following ? 0 : heading } : null}
+          follow={following && me ? { lat: me.lat, lng: me.lng } : null}
+          rotate={following ? rot : 0}
+          onUserDrag={() => setFollow(-1)}
           height={typeof window !== "undefined" ? Math.max(320, window.innerHeight - 300) : 420}
         />
         <Button
           size="icon"
-          variant="secondary"
+          variant={following ? "secondary" : "default"}
           className="absolute bottom-5 right-5 z-[500] rounded-full shadow"
-          onClick={() => setFollow((f) => f + 1)}
+          onClick={() => setFollow(0)}
           aria-label="Recenter on me"
         >
           <Crosshair className="size-5" />
