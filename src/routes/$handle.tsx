@@ -75,7 +75,7 @@ function StorefrontPage() {
       if (!alive) return;
       setProducts(ps);
       const urls = await Promise.all(ps.map((p) => shopPhotoUrl(p.photo_url)));
-      if (alive) setThumbs(Object.fromEntries(ps.map((p, i) => [p.id, urls[i]])));
+      if (alive) setThumbs(Object.fromEntries(ps.map((p, i) => [p.id, urls[i] ?? null])));
     })();
     return () => {
       alive = false;

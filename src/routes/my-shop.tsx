@@ -111,7 +111,7 @@ function RegisterForm({ userId, onCreated }: { userId: string; onCreated: () => 
 
   useEffect(() => {
     setAvailable(null);
-    if (!valid) return;
+    if (!valid) return undefined;
     const t = window.setTimeout(async () => {
       const { data } = await (supabase as unknown as { rpc: (f: string, a: unknown) => Promise<{ data: boolean }> }).rpc(
         "is_shop_handle_available",
@@ -126,14 +126,14 @@ function RegisterForm({ userId, onCreated }: { userId: string; onCreated: () => 
     setLocating(true);
     const r = await captureAccurateLocation();
     setLocating(false);
-    if (r.quality === "blocked") return toast.error(r.message);
+    if (r.quality === "blocked") return void toast.error(r.message);
     setGps({ lat: r.point.lat, lng: r.point.lng, msg: r.message });
   };
 
   const save = async () => {
-    if (!valid || !available) return toast.error("Choose an available shop name");
-    if (!name.trim() || !phone.trim()) return toast.error("Add your shop name and phone number");
-    if (!gps) return toast.error("Capture your shop's location while standing at the door");
+    if (!valid || !available) return void toast.error("Choose an available shop name");
+    if (!name.trim() || !phone.trim()) return void toast.error("Add your shop name and phone number");
+    if (!gps) return void toast.error("Capture your shop's location while standing at the door");
     setSaving(true);
     try {
       const photo_url = photo ? await uploadShopPhoto(userId, photo) : null;
@@ -298,7 +298,7 @@ function ManageShop({ shop, userId }: { shop: Shop; userId: string }) {
     const list = (data ?? []) as Product[];
     setProducts(list);
     const urls = await Promise.all(list.map((p) => shopPhotoUrl(p.photo_url)));
-    setThumbs(Object.fromEntries(list.map((p, i) => [p.id, urls[i]])));
+    setThumbs(Object.fromEntries(list.map((p, i) => [p.id, urls[i] ?? null])));
   }, [shop.id]);
   useEffect(() => {
     void load();
@@ -306,7 +306,7 @@ function ManageShop({ shop, userId }: { shop: Shop; userId: string }) {
 
   const add = async () => {
     const p = Number(price);
-    if (!name.trim() || !Number.isFinite(p) || p < 0) return toast.error("Add a product name and price");
+    if (!name.trim() || !Number.isFinite(p) || p < 0) return void toast.error("Add a product name and price");
     setSaving(true);
     try {
       const photo_url = photo ? await uploadShopPhoto(userId, photo) : null;
