@@ -481,7 +481,7 @@ export function CommunityMapPanel({
   return (
     <div className="flex h-full min-h-0 flex-col bg-wa-panel">
       <header className="flex items-center gap-3 border-b border-wa-divider bg-card px-3 py-2">
-        <Button variant="ghost" size="icon" onClick={onBack} aria-label="Back">
+        <Button variant="ghost" size="icon" onClick={() => { clearDraft(DRAFT_KEY); setCapture(null); setPin(null); onBack(); }} aria-label="Back">
           <ArrowLeft className="size-5" />
         </Button>
         <div className="min-w-0 flex-1">

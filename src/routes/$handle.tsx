@@ -120,7 +120,7 @@ function StorefrontPage() {
   return (
     <main className="min-h-dvh bg-background pb-28">
       <header className="sticky top-0 z-10 flex items-center border-b border-border bg-background/95 px-4 py-3 backdrop-blur">
-        <button type="button" aria-label="Back" onClick={() => window.history.length > 1 ? window.history.back() : void navigate({ to: "/" })}>
+        <button type="button" aria-label="Back" onClick={() => window.history.length > 1 ? window.history.back() : void navigate({ to: "/jobs", search: { tab: "jobs" } })}>
           <ChevronLeft className="size-6" />
         </button>
         <p className="flex-1 text-center font-display text-base font-semibold">FindMit</p>

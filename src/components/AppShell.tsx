@@ -27,51 +27,7 @@ const STORIES_TABS: { id: StoriesInnerTab; label: string; icon: typeof Home }[] 
   { id: "post", label: "Post", icon: Plus },
 ];
 
-/** Swipe right = back, swipe left = forward (replaces the old green arrow buttons). */
-function useSwipeHistory() {
-  useEffect(() => {
-    let sx = 0;
-    let sy = 0;
-    let st = 0;
-    let active = false;
-    const blocked = (el: EventTarget | null) =>
-      el instanceof Element &&
-      !!el.closest(
-        'input, textarea, select, video, [role="slider"], [role="dialog"], [data-no-swipe], [data-no-pull], .overflow-x-auto, .overflow-x-scroll',
-      );
-    const onStart = (e: TouchEvent) => {
-      if (e.touches.length !== 1 || blocked(e.target)) {
-        active = false;
-        return;
-      }
-      active = true;
-      sx = e.touches[0]!.clientX;
-      sy = e.touches[0]!.clientY;
-      st = Date.now();
-    };
-    const onEnd = (e: TouchEvent) => {
-      if (!active) return;
-      active = false;
-      const t = e.changedTouches[0];
-      if (!t) return;
-      const dx = t.clientX - sx;
-      const dy = t.clientY - sy;
-      if (Date.now() - st > 800) return;
-      if (Math.abs(dx) < 70 || Math.abs(dx) < Math.abs(dy) * 2) return;
-      if (dx > 0) window.history.back();
-      else window.history.forward();
-    };
-    window.addEventListener("touchstart", onStart, { passive: true });
-    window.addEventListener("touchend", onEnd, { passive: true });
-    return () => {
-      window.removeEventListener("touchstart", onStart);
-      window.removeEventListener("touchend", onEnd);
-    };
-  }, []);
-}
-
 function BottomNavFrame({ children }: { children: ReactNode }) {
-  useSwipeHistory();
   return (
     <nav aria-label="App navigation" className="fixed inset-x-2 bottom-2 z-40 mx-auto max-w-xl">
       <div className="flex h-[4.5rem] items-center gap-1 rounded-[2rem] border border-nav-border bg-nav-surface px-2 shadow-nav-bar">
@@ -199,7 +155,7 @@ export function AppShell({
     if (initialRedirectDone) return;
     initialRedirectDone = true;
     if (pathname === "/") {
-      void navigate({ to: "/jobs", search: { tab: "ghana" }, replace: true });
+      void navigate({ to: "/jobs", search: { tab: "jobs" }, replace: true });
     }
   }, [loading, pathname, navigate]);
 

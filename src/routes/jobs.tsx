@@ -133,7 +133,7 @@ function JobsPage() {
   const navigate = useNavigate();
   const pushToUser = useServerFn(sendPushToUser);
   const search = Route.useSearch();
-  const [tab, setTab] = useState<"jobs" | "talent" | "ghana">(search.tab ?? "ghana");
+  const [tab, setTab] = useState<"jobs" | "talent" | "ghana">(search.tab ?? "jobs");
   const [term, setTerm] = useState("");
   const [typeFilters, setTypeFilters] = useState<string[]>([]);
   const [savedOnly, setSavedOnly] = useState(false);
