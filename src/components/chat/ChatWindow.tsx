@@ -485,6 +485,7 @@ export function ChatWindow({ conversationId, me, other, onBack, onChanged, onTog
 
       <OneToOneComposer
         meId={me.id}
+        draftKey={conversationId}
         onTyping={notifyTyping}
         onSend={async (payload) => {
           const msg = await sendMessage({
