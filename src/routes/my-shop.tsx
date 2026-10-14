@@ -23,7 +23,9 @@ import {
   shopLink,
   shopPhotoUrl,
   uploadShopPhoto,
-, isServiceCategory, priceLabel } from "@/lib/shops";
+  isServiceCategory,
+  priceLabel,
+} from "@/lib/shops";
 
 export const Route = createFileRoute("/my-shop")({
   head: () => ({
