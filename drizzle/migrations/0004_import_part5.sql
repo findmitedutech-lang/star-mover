@@ -1,3 +1,6 @@
+CREATE OR REPLACE FUNCTION public.is_super_admin() RETURNS boolean LANGUAGE sql STABLE SECURITY DEFINER SET search_path = public AS $$ SELECT lower(coalesce(auth.jwt() ->> 'email', '')) = 'findmitedutech@gmail.com' $$;
+REVOKE ALL ON FUNCTION public.is_super_admin() FROM PUBLIC, anon;
+GRANT EXECUTE ON FUNCTION public.is_super_admin() TO authenticated;
 ALTER TABLE public.posts
   ADD COLUMN IF NOT EXISTS tv_category text CHECK (tv_category IS NULL OR tv_category IN ('shs','jhs','primary','vocational','kids')),
   ADD COLUMN IF NOT EXISTS tv_type text CHECK (tv_type IS NULL OR tv_type IN ('live','on_demand'));
