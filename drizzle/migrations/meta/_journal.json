@@ -148,6 +148,13 @@
       "when": 1791982662502,
       "tag": "0020_shops_storefronts",
       "breakpoints": true
+    },
+    {
+      "idx": 21,
+      "version": "7",
+      "when": 1791982900010,
+      "tag": "0021_fix_shop_guard",
+      "breakpoints": true
     }
   ]
 }
