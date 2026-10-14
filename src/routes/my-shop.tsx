@@ -1,4 +1,5 @@
 import { openCheckout } from "@/lib/open-checkout";
+import { useCachedState } from "@/lib/page-cache";
 import { useCallback, useEffect, useState } from "react";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";

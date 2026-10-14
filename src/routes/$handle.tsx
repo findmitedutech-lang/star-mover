@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useCachedState } from "@/lib/page-cache";
 import { createFileRoute, notFound, useNavigate } from "@tanstack/react-router";
 import { BadgeCheck, ChevronLeft, Home as HomeIcon, IdCard, Loader2, MapPin, Navigation, Phone, ShieldAlert, Store, Users } from "lucide-react";
 import policeCrest from "@/assets/ghana-police-crest.png.asset.json";
