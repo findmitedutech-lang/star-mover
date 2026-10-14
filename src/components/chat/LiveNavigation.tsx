@@ -42,7 +42,7 @@ function fmt(m: number) {
 
 /** Live GPS tracking from the user's position to a shared destination. */
 export function LiveNavigation({ target, onClose }: { target: NavTarget; onClose: () => void }) {
-  const [me, setMe] = useState<{ lat: number; lng: number; acc: number; speed: number | null } | null>(null);
+  const [me, setMe] = useState<{ lat: number; lng: number; acc: number; speed: number | null; heading: number | null } | null>(null);
   const [trail, setTrail] = useState<[number, number][]>([]);
   const [arrived, setArrived] = useState(false);
   const [follow, setFollow] = useState(0);
@@ -148,6 +148,7 @@ export function LiveNavigation({ target, onClose }: { target: NavTarget; onClose
           lng: pos.coords.longitude,
           acc: pos.coords.accuracy,
           speed: pos.coords.speed,
+          heading: pos.coords.heading,
         };
         setMe(p);
         setTrail((t) => [...t.slice(-500), [p.lat, p.lng]]);
