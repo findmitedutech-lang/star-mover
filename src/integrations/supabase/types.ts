@@ -2635,6 +2635,145 @@ export type Database = {
           },
         ]
       }
+      shop_payments: {
+        Row: {
+          amount: number
+          created_at: string
+          id: string
+          method: string | null
+          reference: string
+          shop_id: string
+          status: string
+          user_id: string
+        }
+        Insert: {
+          amount: number
+          created_at?: string
+          id?: string
+          method?: string | null
+          reference: string
+          shop_id: string
+          status?: string
+          user_id: string
+        }
+        Update: {
+          amount?: number
+          created_at?: string
+          id?: string
+          method?: string | null
+          reference?: string
+          shop_id?: string
+          status?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "shop_payments_shop_id_fkey"
+            columns: ["shop_id"]
+            isOneToOne: false
+            referencedRelation: "shops"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      shop_products: {
+        Row: {
+          created_at: string
+          description: string | null
+          id: string
+          is_available: boolean
+          name: string
+          photo_url: string | null
+          price_ghc: number
+          shop_id: string
+          sort_order: number
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_available?: boolean
+          name: string
+          photo_url?: string | null
+          price_ghc?: number
+          shop_id: string
+          sort_order?: number
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_available?: boolean
+          name?: string
+          photo_url?: string | null
+          price_ghc?: number
+          shop_id?: string
+          sort_order?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "shop_products_shop_id_fkey"
+            columns: ["shop_id"]
+            isOneToOne: false
+            referencedRelation: "shops"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      shops: {
+        Row: {
+          category: string
+          created_at: string
+          description: string | null
+          handle: string
+          id: string
+          landmark: string | null
+          lat: number | null
+          lng: number | null
+          name: string
+          owner_id: string
+          phone: string
+          photo_url: string | null
+          subscription_expires_at: string | null
+          subscription_status: string
+          updated_at: string
+        }
+        Insert: {
+          category?: string
+          created_at?: string
+          description?: string | null
+          handle: string
+          id?: string
+          landmark?: string | null
+          lat?: number | null
+          lng?: number | null
+          name: string
+          owner_id: string
+          phone?: string
+          photo_url?: string | null
+          subscription_expires_at?: string | null
+          subscription_status?: string
+          updated_at?: string
+        }
+        Update: {
+          category?: string
+          created_at?: string
+          description?: string | null
+          handle?: string
+          id?: string
+          landmark?: string | null
+          lat?: number | null
+          lng?: number | null
+          name?: string
+          owner_id?: string
+          phone?: string
+          photo_url?: string | null
+          subscription_expires_at?: string | null
+          subscription_status?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       skipped_live_classes: {
         Row: {
           class_id: string
@@ -3662,6 +3801,7 @@ export type Database = {
         Args: { _conversation_id: string; _user_id: string }
         Returns: boolean
       }
+      is_shop_handle_available: { Args: { _handle: string }; Returns: boolean }
       is_super_admin: { Args: never; Returns: boolean }
       match_ges_vault_jhs: {
         Args: {
@@ -3723,6 +3863,10 @@ export type Database = {
         Args: { _replay_id: string; _user_id: string }
         Returns: boolean
       }
+      owns_shop: {
+        Args: { _shop_id: string; _user_id: string }
+        Returns: boolean
+      }
       report_route: {
         Args: {
           _helpful: boolean
@@ -3755,6 +3899,7 @@ export type Database = {
           unhelpful_count: number
         }[]
       }
+      shop_is_active: { Args: { _shop_id: string }; Returns: boolean }
       unlock_talent_contact: {
         Args: { _talent_profile_id: string }
         Returns: boolean
