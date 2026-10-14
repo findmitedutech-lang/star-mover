@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { supabase } from "@/integrations/supabase/client";
+import { getCachedUrl, setCachedUrl } from "@/lib/signed-url-cache";
 
 /** New chat tables are not in the generated types yet, so use an untyped view of the client. */
 const db = supabase as unknown as SupabaseClient;
@@ -285,14 +286,20 @@ const urlCache = new Map<string, { url: string; expires: number }>();
 export async function signedChatUrl(path: string) {
   const hit = urlCache.get(path);
   if (hit && hit.expires > Date.now()) return hit.url;
-  const { data } = await db.storage.from(CHAT_BUCKET).createSignedUrl(path, 60 * 60 * 4);
+  const stored = getCachedUrl(CHAT_BUCKET, path);
+  if (stored) {
+    urlCache.set(path, { url: stored, expires: Date.now() + 60 * 60 * 1000 });
+    return stored;
+  }
+  const { data } = await db.storage.from(CHAT_BUCKET).createSignedUrl(path, 60 * 60 * 24 * 7);
   if (!data?.signedUrl) return null;
-  urlCache.set(path, { url: data.signedUrl, expires: Date.now() + 3.5 * 60 * 60 * 1000 });
+  urlCache.set(path, { url: data.signedUrl, expires: Date.now() + 6 * 86400000 });
+  setCachedUrl(CHAT_BUCKET, path, data.signedUrl, 6 * 86400000);
   return data.signedUrl;
 }
 
 export function useChatMediaUrl(path: string | null | undefined) {
-  const [url, setUrl] = useState<string | null>(null);
+  const [url, setUrl] = useState<string | null>(() => (path ? urlCache.get(path)?.url ?? null : null));
   useEffect(() => {
     let active = true;
     if (!path) {

@@ -66,7 +66,11 @@ export function shopLink(handle: string) {
 
 export async function shopPhotoUrl(path: string | null) {
   if (!path) return null;
-  const { data } = await supabase.storage.from(SHOP_BUCKET).createSignedUrl(path, 3600);
+  const hit = getCachedUrl(SHOP_BUCKET, path);
+  if (hit) return hit;
+  // Signed for 7 days, reused for 6 so the photo URL stays stable and browser-cached.
+  const { data } = await supabase.storage.from(SHOP_BUCKET).createSignedUrl(path, 7 * 86400);
+  if (data?.signedUrl) setCachedUrl(SHOP_BUCKET, path, data.signedUrl, 6 * 86400000);
   return data?.signedUrl ?? null;
 }
 
