@@ -10,6 +10,14 @@ export interface MapPlace {
   photo?: boolean;
 }
 
+export interface MapShop {
+  id: string;
+  lat: number;
+  lng: number;
+  name: string;
+  emoji: string;
+}
+
 export interface MapRoad {
   id: string;
   points: [number, number][];
@@ -29,6 +37,8 @@ export function CommunityMapView({
   roads = [],
   height = 260,
   onMapTap,
+  shops = [],
+  onShopTap,
 }: {
   center: { lat: number; lng: number };
   pin?: { lat: number; lng: number } | null;
@@ -37,6 +47,8 @@ export function CommunityMapView({
   roads?: MapRoad[];
   height?: number;
   onMapTap?: (lat: number, lng: number) => void;
+  shops?: MapShop[];
+  onShopTap?: (id: string) => void;
 }) {
   const boxRef = useRef<HTMLDivElement | null>(null);
   const mapRef = useRef<L.Map | null>(null);
@@ -47,6 +59,8 @@ export function CommunityMapView({
   moveRef.current = onPinMove;
   const tapRef = useRef(onMapTap);
   tapRef.current = onMapTap;
+  const shopTapRef = useRef(onShopTap);
+  shopTapRef.current = onShopTap;
 
   useEffect(() => {
     let cancelled = false;
@@ -109,6 +123,19 @@ export function CommunityMapView({
         .bindTooltip(p.photo ? `📷 ${p.label}` : p.label)
         .addTo(layer);
     }
+    for (const s of shops) {
+      const icon = lib.divIcon({
+        className: "",
+        html: `<div style="width:34px;height:34px;border-radius:50%;background:#fff;border:2px solid #16a34a;display:flex;align-items:center;justify-content:center;font-size:18px;box-shadow:0 2px 6px rgba(0,0,0,.35)">${s.emoji}</div>`,
+        iconSize: [34, 34],
+        iconAnchor: [17, 17],
+      });
+      lib
+        .marker([s.lat, s.lng], { icon })
+        .bindTooltip(s.name.replace(/[<>&]/g, ""))
+        .on("click", () => shopTapRef.current?.(s.id))
+        .addTo(layer);
+    }
     if (pin) {
       if (!pinRef.current) {
         const icon = lib.divIcon({
@@ -132,7 +159,7 @@ export function CommunityMapView({
     }
   }
 
-  useEffect(draw, [pin?.lat, pin?.lng, places, roads]); // eslint-disable-line react-hooks/exhaustive-deps
+  useEffect(draw, [pin?.lat, pin?.lng, places, roads, shops]); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <div

@@ -627,6 +627,8 @@ export function CommunityMapPanel({
               ) : null}
             </div>
 
+            <ShopsMap onNavigate={onNavigate} />
+
             <div className="rounded-2xl bg-card p-4 shadow-sm">
               <p className="text-sm font-semibold">1. Capture accurate location</p>
               <p className="mt-1 text-xs text-muted-foreground">
@@ -1011,5 +1013,77 @@ function MyShopLink() {
     <Link to="/my-shop" className="text-xs font-medium text-wa-green">
       {hasShop ? "Manage shop" : "+ Register your shop"}
     </Link>
+  );
+}
+
+type PinnedShop = { id: string; handle: string; name: string; lat: number; lng: number; category: string; landmark: string | null };
+
+/** Every active registered shop appears on the map with its category symbol (💊 pharmacy, ➕ hospital, 📚 school…). */
+function ShopsMap({ onNavigate }: { onNavigate?: ((t: NavTarget) => void) | undefined }) {
+  const navigateTo = useNavigate();
+  const [center, setCenter] = useState<{ lat: number; lng: number } | null>(null);
+  const [shops, setShops] = useState<PinnedShop[]>([]);
+  const [picked, setPicked] = useState<PinnedShop | null>(null);
+
+  useEffect(() => {
+    void (supabase as unknown as { from: (t: string) => any })
+      .from("shops")
+      .select("id, handle, name, lat, lng, category, landmark")
+      .eq("subscription_status", "active")
+      .gt("subscription_expires_at", new Date().toISOString())
+      .not("lat", "is", null)
+      .limit(500)
+      .then(({ data }: { data: PinnedShop[] | null }) => setShops(data ?? []));
+    navigator.geolocation?.getCurrentPosition(
+      (p) => setCenter({ lat: p.coords.latitude, lng: p.coords.longitude }),
+      () => setCenter({ lat: 5.6037, lng: -0.187 }), // Accra
+      { enableHighAccuracy: false, maximumAge: 120000, timeout: 8000 },
+    );
+  }, []);
+
+  const pins = shops.map((s) => ({ id: s.id, lat: s.lat, lng: s.lng, name: s.name, emoji: categoryEmoji(s.category) }));
+  return (
+    <div className="rounded-2xl bg-card p-4 shadow-sm">
+      <p className="text-sm font-semibold">Shops & services on the map</p>
+      <p className="mt-1 text-xs text-muted-foreground">
+        💊 Pharmacy · ➕ Hospital · 📚 School · 🛡️ Police · 🔧 Mechanic · 🍴 Food — tap a pin.
+      </p>
+      {center ? (
+        <div className="mt-3">
+          <CommunityMapView center={center} shops={pins} onShopTap={(id) => setPicked(shops.find((s) => s.id === id) ?? null)} height={300} />
+        </div>
+      ) : (
+        <div className="mt-3 flex h-[300px] items-center justify-center rounded-xl bg-muted">
+          <Loader2 className="size-5 animate-spin text-muted-foreground" />
+        </div>
+      )}
+      {picked ? (
+        <div className="mt-3 rounded-xl border border-border p-2">
+          <div className="flex items-center gap-2">
+            <span className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-muted text-lg">{categoryEmoji(picked.category)}</span>
+            <span className="min-w-0 flex-1">
+              <span className="block truncate text-sm font-medium">{picked.name}</span>
+              <span className="block truncate text-xs text-muted-foreground">
+                @{picked.handle}
+                {picked.landmark ? ` · ${picked.landmark}` : ""}
+              </span>
+            </span>
+          </div>
+          <div className="mt-2 flex gap-2">
+            <Button
+              size="sm"
+              variant="outline"
+              className="flex-1"
+              onClick={() => onNavigate?.({ lat: picked.lat, lng: picked.lng, label: picked.name, landmark: picked.landmark ?? undefined })}
+            >
+              <Navigation className="size-4" /> Go
+            </Button>
+            <Button size="sm" className="flex-1" onClick={() => void navigateTo({ to: "/$handle", params: { handle: `@${picked.handle}` } })}>
+              <Store className="size-4" /> Enter Shop
+            </Button>
+          </div>
+        </div>
+      ) : null}
+    </div>
   );
 }

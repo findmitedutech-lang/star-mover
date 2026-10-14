@@ -13,14 +13,24 @@ const EmojiPicker = lazy(async () => {
   return { default: (props: { onSelect: (emoji: string) => void }) => <Picker data={data} theme="light" previewPosition="none" skinTonePosition="none" onEmojiSelect={(emoji: { native?: string }) => { if (emoji.native) props.onSelect(emoji.native); }} /> };
 });
 
-interface Props { meId: string; disabled?: boolean; onTyping?: () => void; onSend: (payload: { type: MessageType; content?: string; mediaPath?: string | null; mediaDuration?: number | null; mediaName?: string | null; }) => Promise<void>; }
+interface Props { meId: string; draftKey?: string; disabled?: boolean; onTyping?: () => void; onSend: (payload: { type: MessageType; content?: string; mediaPath?: string | null; mediaDuration?: number | null; mediaName?: string | null; }) => Promise<void>; }
 const CANCEL_DISTANCE = 110;
 const LOCK_DISTANCE = 70;
 const TAP_MS = 350;
 const WAVE_BARS = [10, 18, 26, 14, 22, 30, 16, 24, 12, 28, 20, 15, 26, 11, 23, 30, 17, 21, 13, 27, 19, 25, 14, 29];
 
-export function OneToOneComposer({ meId, disabled, onSend, onTyping }: Props) {
+export function OneToOneComposer({ meId, draftKey, disabled, onSend, onTyping }: Props) {
   const [text, setText] = useState("");
+  // A product shared from a shop page is staged here for the customer to review and send.
+  useEffect(() => {
+    if (!draftKey) return;
+    const k = `fm-chat-draft:${draftKey}`;
+    const staged = sessionStorage.getItem(k);
+    if (staged) {
+      sessionStorage.removeItem(k);
+      setText(staged);
+    }
+  }, [draftKey]);
   const [busy, setBusy] = useState(false);
   const [recording, setRecording] = useState(false);
   const [locked, setLocked] = useState(false);
