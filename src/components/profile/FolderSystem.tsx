@@ -35,7 +35,8 @@ import {
   type ProfileFolder,
 } from "@/lib/folders";
 import { cn } from "@/lib/utils";
-import wallpaper from "@/assets/findmit-chat-wallpaper-2.jpg.asset.json";
+import wallpaperSrc from "@/assets/chat-wallpaper.jpg";
+const wallpaper = { url: wallpaperSrc };
 
 export interface MediaItem {
   id: string;

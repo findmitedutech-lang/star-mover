@@ -37,13 +37,8 @@ export const BG_SOURCES: Record<BgKey, string> = {
   "repair-bench": "/expertise-bgs/repair-bench-bg.jpg",
 };
 
-/** Images cycled in the Find Talent feed when no expertise filter is active. */
-export const SLIDESHOW_BGS = [
-  BG_SOURCES.welding,
-  BG_SOURCES["hair-salon"],
-  BG_SOURCES.plumbing,
-  BG_SOURCES.tailoring,
-];
+/** Every workshop image, cycled behind the Find Jobs and Find Talent feeds. */
+export const SLIDESHOW_BGS = Object.values(BG_SOURCES);
 
 export interface Expertise {
   /** Stored value on the talent profile. */

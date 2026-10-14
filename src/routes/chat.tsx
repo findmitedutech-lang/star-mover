@@ -18,7 +18,8 @@ import { AmaAvatar } from "@/components/tutor/AmaAvatar";
 import { useTutorSettings } from "@/lib/tutor";
 import { fetchChatPrefs, setConversationPinned } from "@/lib/chat-prefs";
 import { subscribeIncomingCalls } from "@/lib/calls";
-import wallpaper from "@/assets/findmit-chat-wallpaper-2.jpg.asset.json";
+import wallpaperSrc from "@/assets/chat-wallpaper.jpg";
+const wallpaper = { url: wallpaperSrc };
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth";
 import {

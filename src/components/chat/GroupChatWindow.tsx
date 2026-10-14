@@ -5,7 +5,8 @@ import { UserAvatar } from "@/components/UserAvatar";
 import { MessageBubble } from "@/components/chat/MessageBubble";
 import { Composer } from "@/components/chat/Composer";
 import { supabase } from "@/integrations/supabase/client";
-import wallpaper from "@/assets/findmit-chat-wallpaper-3.jpg.asset.json";
+import wallpaperSrc from "@/assets/chat-wallpaper.jpg";
+const wallpaper = { url: wallpaperSrc };
 import { formatDayLabel, type ChatMessage, type ProfileLite } from "@/lib/chat";
 import {
   fetchGroupMembers,
