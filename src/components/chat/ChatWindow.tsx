@@ -211,7 +211,6 @@ export function ChatWindow({ conversationId, me, other, onBack, onChanged, onTog
 
   useEffect(() => {
     let active = true;
-    setLoading(true);
     fetchMessages(conversationId)
       .then((rows) => {
         if (active) setMessages(rows);
