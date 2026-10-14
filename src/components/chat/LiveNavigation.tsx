@@ -34,6 +34,7 @@ function bearing(aLat: number, aLng: number, bLat: number, bLng: number) {
 }
 
 const DIRS = ["north", "north-east", "east", "south-east", "south", "south-west", "west", "north-west"];
+const SHOW_WALK = false;
 
 function fmt(m: number) {
   return m >= 1000 ? `${(m / 1000).toFixed(1)} km` : `${Math.round(m)} m`;
@@ -55,7 +56,7 @@ export function LiveNavigation({ target, onClose }: { target: NavTarget; onClose
   const [peek, setPeek] = useState<PhotoPlace | null>(null);
   const seenChips = useRef(new Set<string>());
   const { user } = useAuth();
-  const [mode, setMode] = useState<TravelMode>("walk");
+  const [mode, setMode] = useState<TravelMode>("drive");
   const [askFeedback, setAskFeedback] = useState(false);
   const [feedbackDone, setFeedbackDone] = useState(false);
 
@@ -259,18 +260,21 @@ export function LiveNavigation({ target, onClose }: { target: NavTarget; onClose
       </div>
 
       <div className="border-t border-wa-divider bg-card px-4 py-3">
-        <div className="mb-2 flex gap-1">
-          {(["walk", "drive"] as TravelMode[]).map((m) => (
-            <button
-              key={m}
-              type="button"
-              onClick={() => switchMode(m)}
-              className={`flex-1 rounded-full px-3 py-1 text-xs font-medium ${mode === m ? "bg-primary text-primary-foreground" : "bg-muted"}`}
-            >
-              {m === "walk" ? "🚶 Walk" : "🚗 Drive"}
-            </button>
-          ))}
-        </div>
+        {/* Walk navigation hidden from the public until footpaths are reliable; drive is the default. */}
+        {SHOW_WALK ? (
+          <div className="mb-2 flex gap-1">
+            {(["walk", "drive"] as TravelMode[]).map((m) => (
+              <button
+                key={m}
+                type="button"
+                onClick={() => switchMode(m)}
+                className={`flex-1 rounded-full px-3 py-1 text-xs font-medium ${mode === m ? "bg-primary text-primary-foreground" : "bg-muted"}`}
+              >
+                {m === "walk" ? "🚶 Walk" : "🚗 Drive"}
+              </button>
+            ))}
+          </div>
+        ) : null}
         {nearCard && destPhoto ? (
           <div className="mb-3 rounded-2xl border border-wa-green/40 bg-wa-panel p-2">
             <p className="mb-2 text-sm font-semibold text-wa-green">
