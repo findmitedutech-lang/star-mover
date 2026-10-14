@@ -1,3 +1,4 @@
+import { useAuth } from "@/lib/auth";
 import { useCallback, useEffect, useRef, useState } from "react";
 import {
   ArrowLeft,
@@ -519,7 +520,7 @@ export function CommunityMapPanel({
             <div className="rounded-2xl bg-card p-4 shadow-sm">
               <div className="flex items-center justify-between">
                 <p className="text-sm font-semibold">Find a place</p>
-                <Link to="/my-shop" className="text-xs font-medium text-wa-green">+ Register your shop</Link>
+                <MyShopLink />
               </div>
               <Input
                 className="mt-2"
@@ -990,5 +991,25 @@ export function CommunityMapPanel({
         ) : null}
       </div>
     </div>
+  );
+}
+
+function MyShopLink() {
+  const { user } = useAuth();
+  const [hasShop, setHasShop] = useState(false);
+  useEffect(() => {
+    if (!user) return setHasShop(false);
+    void (supabase as unknown as { from: (t: string) => any })
+      .from("shops")
+      .select("id")
+      .eq("owner_id", user.id)
+      .eq("subscription_status", "active")
+      .limit(1)
+      .then(({ data }: { data: unknown[] | null }) => setHasShop(!!data?.length));
+  }, [user]);
+  return (
+    <Link to="/my-shop" className="text-xs font-medium text-wa-green">
+      {hasShop ? "Manage shop" : "+ Register your shop"}
+    </Link>
   );
 }
