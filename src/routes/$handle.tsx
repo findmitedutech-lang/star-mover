@@ -9,7 +9,7 @@ import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth";
 const LiveNavigation = lazy(() => import("@/components/chat/LiveNavigation").then((m) => ({ default: m.LiveNavigation })));
-import { categoryEmoji, categoryLabel, isPoliceShop, normaliseHandle, shopPhotoUrl } from "@/lib/shops";
+import { categoryEmoji, categoryLabel, isPoliceShop, normaliseHandle, shopPhotoUrl, priceLabel } from "@/lib/shops";
 
 export const Route = createFileRoute("/$handle")({
   beforeLoad: ({ params }) => {
@@ -136,7 +136,7 @@ function StorefrontPage() {
         const link = `https://findmit.world/@${shop.handle}`;
         const lines = [
           `🛍️ ${product.name}`,
-          `GH₵ ${Number(product.price_ghc).toLocaleString()} · ${product.is_available ? "Available" : "Sold out"}`,
+          `${priceLabel(product.price_ghc)} · ${product.is_available ? "Available" : "Sold out"}`,
           product.description ? product.description : null,
           `From @${shop.handle}: ${link}`,
         ].filter(Boolean);
@@ -284,7 +284,7 @@ function StorefrontPage() {
                   <span className={`size-2 rounded-full ${p.is_available ? "bg-wa-green" : "bg-muted-foreground"}`} />
                   {p.is_available ? "Available" : "Sold out"}
                 </span>
-                <p className="mt-1 font-display text-base font-bold text-wa-green">GH₵ {Number(p.price_ghc).toLocaleString()}</p>
+                <p className="mt-1 font-display text-base font-bold text-wa-green">{priceLabel(p.price_ghc)}</p>
               </div>
             ))}
           </div>
@@ -315,7 +315,7 @@ function StorefrontPage() {
           <div className="mx-auto w-full max-w-lg space-y-2 p-5" onClick={(e) => e.stopPropagation()}>
             <p className="font-display text-xl font-bold">{zoom.name}</p>
             <div className="flex items-center gap-3">
-              <span className="font-display text-lg font-bold text-wa-green">GH₵ {Number(zoom.price_ghc).toLocaleString()}</span>
+              <span className="font-display text-lg font-bold text-wa-green">{priceLabel(zoom.price_ghc)}</span>
               <span className="rounded-md bg-muted px-2 py-0.5 text-xs">{zoom.is_available ? "Available" : "Sold out"}</span>
             </div>
             {zoom.description ? <p className="whitespace-pre-wrap text-sm text-muted-foreground">{zoom.description}</p> : null}
@@ -329,7 +329,7 @@ function StorefrontPage() {
       {menu ? (
         <div className="fixed inset-0 z-50 flex items-end justify-center bg-background/60 p-4" onClick={() => setMenu(null)}>
           <div className="w-full max-w-sm space-y-2 rounded-2xl bg-card p-4 shadow-lg" onClick={(e) => e.stopPropagation()}>
-            <p className="truncate text-sm font-semibold">{menu.name} · GH₵ {Number(menu.price_ghc).toLocaleString()}</p>
+            <p className="truncate text-sm font-semibold">{menu.name} · {priceLabel(menu.price_ghc)}</p>
             <Button className="w-full" disabled={chatBusy} onClick={() => { const p = menu; setMenu(null); void openChat(p); }}>
               <MessageCircle className="size-4" /> Send to chat with @{shop.handle}
             </Button>
