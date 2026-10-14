@@ -1,4 +1,5 @@
 import { supabase } from "@/integrations/supabase/client";
+import { getCachedUrl, setCachedUrl } from "@/lib/signed-url-cache";
 
 export const SHOP_BUCKET = "shop-media";
 export const SHOP_DAYS = 365;

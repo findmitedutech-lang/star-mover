@@ -49,31 +49,37 @@ function StorefrontPage() {
   const { session } = useAuth();
   const navigate = useNavigate();
   const [state, setState] = useState<"loading" | "ready" | "missing">("loading");
-  const [shop, setShop] = useState<Shop | null>(null);
-  const [cover, setCover] = useState<string | null>(null);
-  const [products, setProducts] = useState<Product[]>([]);
-  const [thumbs, setThumbs] = useState<Record<string, string | null>>({});
+  const [shop, setShop] = useCachedState<Shop | null>(`shop:${h}`, null, (s) => {
+    if (s) setState("ready");
+  });
+  const [cover, setCover] = useCachedState<string | null>(`shop:${h}:cover`, null);
+  const [products, setProducts] = useCachedState<Product[]>(`shop:${h}:products`, []);
+  const [thumbs, setThumbs] = useCachedState<Record<string, string | null>>(`shop:${h}:thumbs`, {});
 
   useEffect(() => {
     let alive = true;
     void (async () => {
       // Only paid, unexpired shops are visible to customers.
-      const { data } = await db
+      const { data, error } = await db
         .from("shops")
         .select("id, handle, name, category, phone, landmark, description, lat, lng, photo_url, subscription_status, subscription_expires_at")
         .eq("handle", h)
         .eq("subscription_status", "active")
         .gt("subscription_expires_at", new Date().toISOString())
         .maybeSingle();
-      if (!alive) return;
-      if (!data) return setState("missing");
+      if (!alive || error) return;
+      if (!data) {
+        setShop(null);
+        return setState("missing");
+      }
       const s = data as Shop;
       setShop(s);
       setState("ready");
-      setCover(await shopPhotoUrl(s.photo_url));
+      const c = await shopPhotoUrl(s.photo_url);
+      if (alive) setCover((prev) => (prev === c ? prev : c));
       const { data: list } = await db.from("shop_products").select("*").eq("shop_id", s.id).order("sort_order").order("created_at");
-      const ps = (list ?? []) as Product[];
-      if (!alive) return;
+      if (!alive || !list) return;
+      const ps = list as Product[];
       setProducts(ps);
       const urls = await Promise.all(ps.map((p) => shopPhotoUrl(p.photo_url)));
       if (alive) setThumbs(Object.fromEntries(ps.map((p, i) => [p.id, urls[i] ?? null])));
@@ -81,6 +87,7 @@ function StorefrontPage() {
     return () => {
       alive = false;
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [h]);
 
   if (state === "loading")
