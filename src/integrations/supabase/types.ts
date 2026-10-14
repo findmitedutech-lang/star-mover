@@ -10,7 +10,7 @@ export type Database = {
   // Allows to automatically instantiate createClient with right options
   // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
   __InternalSupabase: {
-    PostgrestVersion: "14.15"
+    PostgrestVersion: "14.18"
   }
   public: {
     Tables: {
@@ -56,36 +56,6 @@ export type Database = {
           is_hidden?: boolean
           is_locked?: boolean
           updated_at?: string
-        }
-        Relationships: []
-      }
-      broadcasts: {
-        Row: {
-          created_at: string
-          created_by: string | null
-          id: string
-          is_active: boolean
-          kind: string
-          message: string
-          video_url: string | null
-        }
-        Insert: {
-          created_at?: string
-          created_by?: string | null
-          id?: string
-          is_active?: boolean
-          kind?: string
-          message?: string
-          video_url?: string | null
-        }
-        Update: {
-          created_at?: string
-          created_by?: string | null
-          id?: string
-          is_active?: boolean
-          kind?: string
-          message?: string
-          video_url?: string | null
         }
         Relationships: []
       }
@@ -790,8 +760,6 @@ export type Database = {
           language_detected: string | null
           lat: number
           lng: number
-          photo_pin_x: number | null
-          photo_pin_y: number | null
           photo_url: string | null
           plus_code: string | null
           submitted_by: string | null
@@ -809,8 +777,6 @@ export type Database = {
           language_detected?: string | null
           lat: number
           lng: number
-          photo_pin_x?: number | null
-          photo_pin_y?: number | null
           photo_url?: string | null
           plus_code?: string | null
           submitted_by?: string | null
@@ -828,8 +794,6 @@ export type Database = {
           language_detected?: string | null
           lat?: number
           lng?: number
-          photo_pin_x?: number | null
-          photo_pin_y?: number | null
           photo_url?: string | null
           plus_code?: string | null
           submitted_by?: string | null
@@ -1862,14 +1826,8 @@ export type Database = {
           host_id: string
           id: string
           is_live: boolean
-          lower_third_subtitle: string
-          lower_third_title: string
-          overflow_media_path: string | null
-          overflow_media_title: string
-          overflow_media_type: string | null
           replay_url: string | null
           subject: string | null
-          ticker_text: string
           topic: string
           updated_at: string
           viewer_count: number
@@ -1880,14 +1838,8 @@ export type Database = {
           host_id: string
           id?: string
           is_live?: boolean
-          lower_third_subtitle?: string
-          lower_third_title?: string
-          overflow_media_path?: string | null
-          overflow_media_title?: string
-          overflow_media_type?: string | null
           replay_url?: string | null
           subject?: string | null
-          ticker_text?: string
           topic?: string
           updated_at?: string
           viewer_count?: number
@@ -1898,14 +1850,8 @@ export type Database = {
           host_id?: string
           id?: string
           is_live?: boolean
-          lower_third_subtitle?: string
-          lower_third_title?: string
-          overflow_media_path?: string | null
-          overflow_media_title?: string
-          overflow_media_type?: string | null
           replay_url?: string | null
           subject?: string | null
-          ticker_text?: string
           topic?: string
           updated_at?: string
           viewer_count?: number
