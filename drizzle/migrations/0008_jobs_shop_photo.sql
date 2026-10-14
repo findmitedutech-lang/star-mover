@@ -1,1 +1,0 @@
-ALTER TABLE public.jobs ADD COLUMN IF NOT EXISTS shop_photo_path text;
