@@ -8,6 +8,118 @@
       "when": 1791976585637,
       "tag": "0000_import_part1",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1791976611960,
+      "tag": "0001_import_part2",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1791976611961,
+      "tag": "0002_import_part3",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1791976611962,
+      "tag": "0003_import_part4",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1791976611963,
+      "tag": "0004_import_part5",
+      "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1791976611964,
+      "tag": "0005_import_part6",
+      "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1791976611965,
+      "tag": "0006_import_part7",
+      "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1791976611966,
+      "tag": "0007_tutor_voice_tuning",
+      "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1791976611967,
+      "tag": "0008_tutor_settings_super_admin",
+      "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "7",
+      "when": 1791976611968,
+      "tag": "0009_tutor_free_trial_days",
+      "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "7",
+      "when": 1791976611969,
+      "tag": "0010_create_community_map_tables",
+      "breakpoints": true
+    },
+    {
+      "idx": 11,
+      "version": "7",
+      "when": 1791976611970,
+      "tag": "0011_community_map_storage_policies",
+      "breakpoints": true
+    },
+    {
+      "idx": 12,
+      "version": "7",
+      "when": 1791976611971,
+      "tag": "0012_community_map_confirmations",
+      "breakpoints": true
+    },
+    {
+      "idx": 13,
+      "version": "7",
+      "when": 1791976611972,
+      "tag": "0013_road_tracing_and_feedback",
+      "breakpoints": true
+    },
+    {
+      "idx": 14,
+      "version": "7",
+      "when": 1791976611973,
+      "tag": "0014_findmit_ghana_job_rules",
+      "breakpoints": true
+    },
+    {
+      "idx": 15,
+      "version": "7",
+      "when": 1791976611974,
+      "tag": "0015_jobs_shop_photo",
+      "breakpoints": true
+    },
+    {
+      "idx": 16,
+      "version": "7",
+      "when": 1791976611975,
+      "tag": "0016_vault_all_levels",
+      "breakpoints": true
     }
   ]
 }
