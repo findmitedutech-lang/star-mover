@@ -10,7 +10,8 @@ export type PriceKey =
   | "talent_employ"
   | "tutor_monthly"
   | "graduate_application"
-  | "company_application";
+  | "company_application"
+  | "shop_registration";
 
 export interface AppPrice {
   key: string;
@@ -27,6 +28,7 @@ const FALLBACK: Record<PriceKey, number> = {
   tutor_monthly: 20,
   graduate_application: 350,
   company_application: 3000,
+  shop_registration: 200,
 };
 
 // The table isn't in the generated types yet, so query it loosely.

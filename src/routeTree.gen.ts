@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as HandleRouteImport } from './routes/$handle'
 import { Route as ApplyCompanyVerificationRouteImport } from './routes/apply-company-verification'
 import { Route as ApplyFindmitVerificationRouteImport } from './routes/apply-findmit-verification'
 import { Route as ApplyTeacherRouteImport } from './routes/apply-teacher'
@@ -20,6 +21,7 @@ import { Route as CreateRouteImport } from './routes/create'
 import { Route as EmployerRouteImport } from './routes/employer'
 import { Route as JobsRouteImport } from './routes/jobs'
 import { Route as LRouteImport } from './routes/l'
+import { Route as MyShopRouteImport } from './routes/my-shop'
 import { Route as OnboardingRouteImport } from './routes/onboarding'
 import { Route as PaymentVerifyRouteImport } from './routes/payment-verify'
 import { Route as SettingsRouteImport } from './routes/settings'
@@ -49,6 +51,11 @@ import { Route as AdminApplicationKindIdRouteImport } from './routes/admin.appli
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const HandleRoute = HandleRouteImport.update({
+  id: '/$handle',
+  path: '/$handle',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ApplyCompanyVerificationRoute =
@@ -101,6 +108,11 @@ const JobsRoute = JobsRouteImport.update({
 const LRoute = LRouteImport.update({
   id: '/l',
   path: '/l',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MyShopRoute = MyShopRouteImport.update({
+  id: '/my-shop',
+  path: '/my-shop',
   getParentRoute: () => rootRouteImport,
 } as any)
 const OnboardingRoute = OnboardingRouteImport.update({
@@ -232,6 +244,7 @@ const AdminApplicationKindIdRoute = AdminApplicationKindIdRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/$handle': typeof HandleRoute
   '/apply-company-verification': typeof ApplyCompanyVerificationRoute
   '/apply-findmit-verification': typeof ApplyFindmitVerificationRoute
   '/apply-teacher': typeof ApplyTeacherRoute
@@ -242,6 +255,7 @@ export interface FileRoutesByFullPath {
   '/employer': typeof EmployerRoute
   '/jobs': typeof JobsRoute
   '/l': typeof LRoute
+  '/my-shop': typeof MyShopRoute
   '/onboarding': typeof OnboardingRoute
   '/payment-verify': typeof PaymentVerifyRoute
   '/settings': typeof SettingsRoute
@@ -270,6 +284,7 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/$handle': typeof HandleRoute
   '/apply-company-verification': typeof ApplyCompanyVerificationRoute
   '/apply-findmit-verification': typeof ApplyFindmitVerificationRoute
   '/apply-teacher': typeof ApplyTeacherRoute
@@ -280,6 +295,7 @@ export interface FileRoutesByTo {
   '/employer': typeof EmployerRoute
   '/jobs': typeof JobsRoute
   '/l': typeof LRoute
+  '/my-shop': typeof MyShopRoute
   '/onboarding': typeof OnboardingRoute
   '/payment-verify': typeof PaymentVerifyRoute
   '/settings': typeof SettingsRoute
@@ -309,6 +325,7 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/$handle': typeof HandleRoute
   '/apply-company-verification': typeof ApplyCompanyVerificationRoute
   '/apply-findmit-verification': typeof ApplyFindmitVerificationRoute
   '/apply-teacher': typeof ApplyTeacherRoute
@@ -319,6 +336,7 @@ export interface FileRoutesById {
   '/employer': typeof EmployerRoute
   '/jobs': typeof JobsRoute
   '/l': typeof LRoute
+  '/my-shop': typeof MyShopRoute
   '/onboarding': typeof OnboardingRoute
   '/payment-verify': typeof PaymentVerifyRoute
   '/settings': typeof SettingsRoute
@@ -349,6 +367,7 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/$handle'
     | '/apply-company-verification'
     | '/apply-findmit-verification'
     | '/apply-teacher'
@@ -359,6 +378,7 @@ export interface FileRouteTypes {
     | '/employer'
     | '/jobs'
     | '/l'
+    | '/my-shop'
     | '/onboarding'
     | '/payment-verify'
     | '/settings'
@@ -387,6 +407,7 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/$handle'
     | '/apply-company-verification'
     | '/apply-findmit-verification'
     | '/apply-teacher'
@@ -397,6 +418,7 @@ export interface FileRouteTypes {
     | '/employer'
     | '/jobs'
     | '/l'
+    | '/my-shop'
     | '/onboarding'
     | '/payment-verify'
     | '/settings'
@@ -425,6 +447,7 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/'
+    | '/$handle'
     | '/apply-company-verification'
     | '/apply-findmit-verification'
     | '/apply-teacher'
@@ -435,6 +458,7 @@ export interface FileRouteTypes {
     | '/employer'
     | '/jobs'
     | '/l'
+    | '/my-shop'
     | '/onboarding'
     | '/payment-verify'
     | '/settings'
@@ -464,6 +488,7 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  HandleRoute: typeof HandleRoute
   ApplyCompanyVerificationRoute: typeof ApplyCompanyVerificationRoute
   ApplyFindmitVerificationRoute: typeof ApplyFindmitVerificationRoute
   ApplyTeacherRoute: typeof ApplyTeacherRoute
@@ -474,6 +499,7 @@ export interface RootRouteChildren {
   EmployerRoute: typeof EmployerRoute
   JobsRoute: typeof JobsRoute
   LRoute: typeof LRoute
+  MyShopRoute: typeof MyShopRoute
   OnboardingRoute: typeof OnboardingRoute
   PaymentVerifyRoute: typeof PaymentVerifyRoute
   SettingsRoute: typeof SettingsRoute
@@ -508,6 +534,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/$handle': {
+      id: '/$handle'
+      path: '/$handle'
+      fullPath: '/$handle'
+      preLoaderRoute: typeof HandleRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/apply-company-verification': {
@@ -578,6 +611,13 @@ declare module '@tanstack/react-router' {
       path: '/l'
       fullPath: '/l'
       preLoaderRoute: typeof LRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/my-shop': {
+      id: '/my-shop'
+      path: '/my-shop'
+      fullPath: '/my-shop'
+      preLoaderRoute: typeof MyShopRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/onboarding': {
@@ -760,6 +800,7 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  HandleRoute: HandleRoute,
   ApplyCompanyVerificationRoute: ApplyCompanyVerificationRoute,
   ApplyFindmitVerificationRoute: ApplyFindmitVerificationRoute,
   ApplyTeacherRoute: ApplyTeacherRoute,
@@ -770,6 +811,7 @@ const rootRouteChildren: RootRouteChildren = {
   EmployerRoute: EmployerRoute,
   JobsRoute: JobsRoute,
   LRoute: LRoute,
+  MyShopRoute: MyShopRoute,
   OnboardingRoute: OnboardingRoute,
   PaymentVerifyRoute: PaymentVerifyRoute,
   SettingsRoute: SettingsRoute,
