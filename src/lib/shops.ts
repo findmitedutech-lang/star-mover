@@ -35,6 +35,19 @@ export function categoryEmoji(c: string) {
   return "🏪";
 }
 
+/** Categories that offer services (schools, clinics, mechanics, home care…) rather than direct goods. */
+export function isServiceCategory(c: string) {
+  const t = (c || "").toLowerCase();
+  if (["school", "clinic", "mechanic", "services", "police"].includes(t)) return true;
+  return /care|tutor|school|academ|college|repair|mechanic|garage|fitting|plumb|clean|salon|barber|hosp|clinic|health|service|consult|lesson|train|electrician|carpent|tailor|laundry/.test(t);
+}
+
+/** Price label: zero/blank prices read "Contact for price" instead of GH₵ 0. */
+export function priceLabel(price: number | null | undefined) {
+  const n = Number(price);
+  return n > 0 ? `GH₵ ${n.toLocaleString()}` : "Contact for price";
+}
+
 export function categoryLabel(c: string) {
   return SHOP_CATEGORIES.find((x) => x.value === c)?.label ?? c;
 }

@@ -23,7 +23,7 @@ import {
   shopLink,
   shopPhotoUrl,
   uploadShopPhoto,
-} from "@/lib/shops";
+, isServiceCategory, priceLabel } from "@/lib/shops";
 
 export const Route = createFileRoute("/my-shop")({
   head: () => ({
@@ -248,7 +248,7 @@ function RegisterForm({ userId, onCreated }: { userId: string; onCreated: () => 
         className="min-h-20 w-full rounded-md border border-input bg-background p-3 text-sm"
         value={description}
         onChange={(e) => setDescription(e.target.value)}
-        placeholder="What do you sell?"
+        placeholder={isServiceCategory(category === CUSTOM_CATEGORY ? customCategory : category) ? "What services or programs do you offer? (optional)" : "What do you sell?"}
       />
       <Button variant="outline" className="w-full" onClick={() => void locate()} disabled={locating}>
         {locating ? <Loader2 className="size-4 animate-spin" /> : <MapPin className="size-4" />}
@@ -344,8 +344,10 @@ function ManageShop({ shop, userId }: { shop: Shop; userId: string }) {
   }, [load]);
 
   const add = async () => {
-    const p = Number(price);
-    if (!name.trim() || !Number.isFinite(p) || p < 0) return void toast.error("Add a product name and price");
+    const service = isServiceCategory(shop.category);
+    const p = price.trim() === "" && service ? 0 : Number(price);
+    if (!name.trim()) return void toast.error(service ? "Add a service name" : "Add a product name");
+    if (!Number.isFinite(p) || p < 0 || (!service && price.trim() === "")) return void toast.error("Add a price");
     setSaving(true);
     try {
       const photo_url = photo ? await uploadShopPhoto(userId, photo) : null;
@@ -405,9 +407,9 @@ function ManageShop({ shop, userId }: { shop: Shop; userId: string }) {
       ) : (
       <>
       <section className="space-y-3 rounded-2xl bg-card p-4 shadow-sm">
-        <p className="font-display font-bold">Add a product or service</p>
-        <Input value={name} onChange={(e) => setName(e.target.value)} placeholder="Name (e.g. Jollof with chicken)" />
-        <Input value={price} onChange={(e) => setPrice(e.target.value)} type="number" min={0} placeholder="Price in GH₵" />
+        <p className="font-display font-bold">{isServiceCategory(shop.category) ? "Add a service or offering" : "Add a product"}</p>
+        <Input value={name} onChange={(e) => setName(e.target.value)} placeholder={isServiceCategory(shop.category) ? "Service or offering name (e.g. Brake replacement, JHS Tutoring)" : "Name (e.g. Jollof with chicken)"} />
+        <Input value={price} onChange={(e) => setPrice(e.target.value)} type="number" min={0} placeholder={isServiceCategory(shop.category) ? "Price in GH₵ (optional)" : "Price in GH₵"} />
         <Input value={desc} onChange={(e) => setDesc(e.target.value)} placeholder="Short description (optional)" />
         <label className="flex cursor-pointer items-center gap-2 rounded-md border border-dashed border-border p-3 text-sm">
           <Camera className="size-4" /> {photo ? photo.name : "Add a photo"}
@@ -428,7 +430,7 @@ function ManageShop({ shop, userId }: { shop: Shop; userId: string }) {
             )}
             <div className="min-w-0 flex-1">
               <p className="truncate text-sm font-medium">{p.name}</p>
-              <p className="text-xs text-muted-foreground">GH₵ {Number(p.price_ghc).toFixed(2)}</p>
+              <p className="text-xs text-muted-foreground">{priceLabel(p.price_ghc)}</p>
             </div>
             <Button
               size="sm"
