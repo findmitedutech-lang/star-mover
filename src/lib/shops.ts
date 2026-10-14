@@ -12,11 +12,24 @@ export const SHOP_CATEGORIES = [
   { value: "fashion", label: "Fashion & Beauty", emoji: "👗" },
   { value: "electronics", label: "Phones & Electronics", emoji: "📱" },
   { value: "services", label: "Services", emoji: "🛠️" },
+  { value: "police", label: "Police Station", emoji: "🛡️" },
   { value: "shop", label: "Other shop", emoji: "🏪" },
 ] as const;
 
+/** Dropdown value that lets the owner type their own category (e.g. "Mechanic"). */
+export const CUSTOM_CATEGORY = "__custom__";
+
 export function categoryEmoji(c: string) {
   return SHOP_CATEGORIES.find((x) => x.value === c)?.emoji ?? "🏪";
+}
+
+export function categoryLabel(c: string) {
+  return SHOP_CATEGORIES.find((x) => x.value === c)?.label ?? c;
+}
+
+/** Police stations get the emergency layout and never sell products. */
+export function isPoliceShop(s: { category: string; handle: string }) {
+  return s.category === "police" || s.handle.endsWith(".police");
 }
 
 /** "@Ama.Food.Shop " -> "ama.food.shop" */
