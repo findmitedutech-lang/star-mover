@@ -8,10 +8,11 @@ export const SHOP_CATEGORIES = [
   { value: "food", label: "Food & Drinks", emoji: "🍴" },
   { value: "provisions", label: "Provisions", emoji: "🛍️" },
   { value: "pharmacy", label: "Pharmacy", emoji: "💊" },
-  { value: "clinic", label: "Clinic", emoji: "🏥" },
+  { value: "clinic", label: "Hospital / Clinic", emoji: "➕" },
   { value: "school", label: "School", emoji: "📚" },
   { value: "fashion", label: "Fashion & Beauty", emoji: "👗" },
   { value: "electronics", label: "Phones & Electronics", emoji: "📱" },
+  { value: "mechanic", label: "Mechanic", emoji: "🔧" },
   { value: "services", label: "Services", emoji: "🛠️" },
   { value: "police", label: "Police Station", emoji: "🛡️" },
   { value: "shop", label: "Other shop", emoji: "🏪" },
@@ -21,7 +22,17 @@ export const SHOP_CATEGORIES = [
 export const CUSTOM_CATEGORY = "__custom__";
 
 export function categoryEmoji(c: string) {
-  return SHOP_CATEGORIES.find((x) => x.value === c)?.emoji ?? "🏪";
+  const hit = SHOP_CATEGORIES.find((x) => x.value === c)?.emoji;
+  if (hit) return hit;
+  // Owner-written categories ("Mechanic", "Chemist", "Hospital") still get a matching map symbol.
+  const t = c.toLowerCase();
+  if (/pharm|chemist|drug/.test(t)) return "💊";
+  if (/hosp|clinic|health|medic/.test(t)) return "➕";
+  if (/school|academy|college|tutor/.test(t)) return "📚";
+  if (/police/.test(t)) return "🛡️";
+  if (/mechanic|garage|auto|fitting/.test(t)) return "🔧";
+  if (/food|chop|restaurant|kitchen/.test(t)) return "🍴";
+  return "🏪";
 }
 
 export function categoryLabel(c: string) {
