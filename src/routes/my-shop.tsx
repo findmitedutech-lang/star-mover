@@ -1,4 +1,5 @@
 import { openCheckout } from "@/lib/open-checkout";
+import { useCachedState } from "@/lib/page-cache";
 import { useCallback, useEffect, useState } from "react";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
@@ -321,8 +322,8 @@ function PayCard({ shop, onActivated }: { shop: Shop; onActivated: () => void })
 }
 
 function ManageShop({ shop, userId }: { shop: Shop; userId: string }) {
-  const [products, setProducts] = useState<Product[]>([]);
-  const [thumbs, setThumbs] = useState<Record<string, string | null>>({});
+  const [products, setProducts] = useCachedState<Product[]>(`myshop:${shop.id}:products`, []);
+  const [thumbs, setThumbs] = useCachedState<Record<string, string | null>>(`myshop:${shop.id}:thumbs`, {});
   const [name, setName] = useState("");
   const [price, setPrice] = useState("");
   const [desc, setDesc] = useState("");

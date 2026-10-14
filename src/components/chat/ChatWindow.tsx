@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
+import { useCachedState } from "@/lib/page-cache";
 import { useServerFn } from "@tanstack/react-start";
 import { ArrowDown, ArrowLeft, MoreVertical, Phone, Search, Video, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -54,8 +55,11 @@ interface Props {
 }
 
 export function ChatWindow({ conversationId, me, other, onBack, onChanged, onToggleInfo }: Props) {
-  const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [loading, setLoading] = useState(true);
+  // Last-shown messages paint instantly; the fetch below only merges changes.
+  const [messages, setMessages] = useCachedState<ChatMessage[]>(`chat:conv:${conversationId}`, [], (rows) => {
+    if (rows.length) setLoading(false);
+  });
   const bottomRef = useRef<HTMLDivElement | null>(null);
   const scrollRef = useRef<HTMLDivElement | null>(null);
   const [activeCall, setActiveCall] = useState<{ call: ChatCall; isCaller: boolean } | null>(null);
@@ -207,7 +211,6 @@ export function ChatWindow({ conversationId, me, other, onBack, onChanged, onTog
 
   useEffect(() => {
     let active = true;
-    setLoading(true);
     fetchMessages(conversationId)
       .then((rows) => {
         if (active) setMessages(rows);
