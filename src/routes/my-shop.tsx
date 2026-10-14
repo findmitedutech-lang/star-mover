@@ -1,3 +1,4 @@
+import { openCheckout } from "@/lib/open-checkout";
 import { useCallback, useEffect, useState } from "react";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
@@ -245,7 +246,7 @@ function PayCard({ shop, onActivated }: { shop: Shop; onActivated: () => void })
         toast.success("Your shop is live!");
         onActivated();
       } else if (r.authorizationUrl) {
-        window.location.href = r.authorizationUrl;
+        openCheckout(r.authorizationUrl);
       }
     } catch (e) {
       toast.error(e instanceof Error ? e.message : "Could not start payment");
@@ -423,7 +424,7 @@ function RenewButton({ shop }: { shop: Shop }) {
       onClick={async () => {
         try {
           const r = await start({ data: { shopId: shop.id, callbackUrl: `${window.location.origin}/payment-verify` } });
-          if (r.authorizationUrl) window.location.href = r.authorizationUrl;
+          if (r.authorizationUrl) openCheckout(r.authorizationUrl);
           else {
             toast.success("Renewed for another year");
             window.location.reload();

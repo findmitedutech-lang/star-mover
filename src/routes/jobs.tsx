@@ -1,3 +1,4 @@
+import { openCheckout } from "@/lib/open-checkout";
 import { useCachedState } from "@/lib/page-cache";
 import { useEffect, useState } from "react";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
@@ -766,7 +767,7 @@ function PostJobDialog({
           },
         });
         toast.info(`Opening secure payment of GHS ${JOB_POST_FEE}…`);
-        window.location.href = authorizationUrl;
+        openCheckout(authorizationUrl);
         return;
       }
       // Alert everyone whose saved job alert matches this new posting.
