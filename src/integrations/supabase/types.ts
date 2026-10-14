@@ -14,6 +14,30 @@ export type Database = {
   }
   public: {
     Tables: {
+      app_pricing: {
+        Row: {
+          amount: number
+          is_waived: boolean
+          key: string
+          label: string
+          updated_at: string
+        }
+        Insert: {
+          amount: number
+          is_waived?: boolean
+          key: string
+          label: string
+          updated_at?: string
+        }
+        Update: {
+          amount?: number
+          is_waived?: boolean
+          key?: string
+          label?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       app_sections: {
         Row: {
           id: string
@@ -618,6 +642,47 @@ export type Database = {
           },
         ]
       }
+      class_understanding: {
+        Row: {
+          class_id: string | null
+          created_at: string
+          followup_score: number
+          id: string
+          status: string
+          topic: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          class_id?: string | null
+          created_at?: string
+          followup_score?: number
+          id?: string
+          status?: string
+          topic?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          class_id?: string | null
+          created_at?: string
+          followup_score?: number
+          id?: string
+          status?: string
+          topic?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "class_understanding_class_id_fkey"
+            columns: ["class_id"]
+            isOneToOne: false
+            referencedRelation: "live_classes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       communities: {
         Row: {
           announcement_chat_id: string | null
@@ -658,6 +723,86 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      community_name_confirmations: {
+        Row: {
+          community_id: string
+          created_at: string
+          user_id: string
+        }
+        Insert: {
+          community_id: string
+          created_at?: string
+          user_id: string
+        }
+        Update: {
+          community_id?: string
+          created_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "community_name_confirmations_community_id_fkey"
+            columns: ["community_id"]
+            isOneToOne: false
+            referencedRelation: "community_names"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      community_names: {
+        Row: {
+          community_name: string
+          created_at: string
+          district: string | null
+          id: string
+          landmark: string | null
+          language_detected: string | null
+          lat: number
+          lng: number
+          photo_url: string | null
+          plus_code: string | null
+          submitted_by: string | null
+          times_confirmed: number
+          transcription: string | null
+          verified: boolean
+          voice_note_url: string | null
+        }
+        Insert: {
+          community_name: string
+          created_at?: string
+          district?: string | null
+          id?: string
+          landmark?: string | null
+          language_detected?: string | null
+          lat: number
+          lng: number
+          photo_url?: string | null
+          plus_code?: string | null
+          submitted_by?: string | null
+          times_confirmed?: number
+          transcription?: string | null
+          verified?: boolean
+          voice_note_url?: string | null
+        }
+        Update: {
+          community_name?: string
+          created_at?: string
+          district?: string | null
+          id?: string
+          landmark?: string | null
+          language_detected?: string | null
+          lat?: number
+          lng?: number
+          photo_url?: string | null
+          plus_code?: string | null
+          submitted_by?: string | null
+          times_confirmed?: number
+          transcription?: string | null
+          verified?: boolean
+          voice_note_url?: string | null
+        }
+        Relationships: []
       }
       company_verification_applications: {
         Row: {
@@ -751,6 +896,51 @@ export type Database = {
           workers_compensation_path?: string | null
         }
         Relationships: []
+      }
+      contact_permissions: {
+        Row: {
+          allow_email: boolean
+          allow_phone: boolean
+          created_at: string
+          id: string
+          owner_id: string
+          updated_at: string
+          viewer_id: string
+        }
+        Insert: {
+          allow_email?: boolean
+          allow_phone?: boolean
+          created_at?: string
+          id?: string
+          owner_id: string
+          updated_at?: string
+          viewer_id: string
+        }
+        Update: {
+          allow_email?: boolean
+          allow_phone?: boolean
+          created_at?: string
+          id?: string
+          owner_id?: string
+          updated_at?: string
+          viewer_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "contact_permissions_owner_id_fkey"
+            columns: ["owner_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "contact_permissions_viewer_id_fkey"
+            columns: ["viewer_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       contact_purchases: {
         Row: {
@@ -974,6 +1164,90 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      ges_vault_jhs: {
+        Row: {
+          content: string
+          created_at: string
+          created_by: string | null
+          embedding: string | null
+          grade: string
+          id: string
+          indicator: string | null
+          level: string
+          source_text: string | null
+          source_type: string
+          strand: string | null
+          sub_strand: string | null
+          subject: string
+          updated_at: string
+        }
+        Insert: {
+          content: string
+          created_at?: string
+          created_by?: string | null
+          embedding?: string | null
+          grade: string
+          id?: string
+          indicator?: string | null
+          level?: string
+          source_text?: string | null
+          source_type?: string
+          strand?: string | null
+          sub_strand?: string | null
+          subject: string
+          updated_at?: string
+        }
+        Update: {
+          content?: string
+          created_at?: string
+          created_by?: string | null
+          embedding?: string | null
+          grade?: string
+          id?: string
+          indicator?: string | null
+          level?: string
+          source_text?: string | null
+          source_type?: string
+          strand?: string | null
+          sub_strand?: string | null
+          subject?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      gps_traces: {
+        Row: {
+          accuracy: number | null
+          created_at: string
+          id: string
+          journey_id: string
+          lat: number
+          lng: number
+          speed: number | null
+          user_id: string | null
+        }
+        Insert: {
+          accuracy?: number | null
+          created_at?: string
+          id?: string
+          journey_id: string
+          lat: number
+          lng: number
+          speed?: number | null
+          user_id?: string | null
+        }
+        Update: {
+          accuracy?: number | null
+          created_at?: string
+          id?: string
+          journey_id?: string
+          lat?: number
+          lng?: number
+          speed?: number | null
+          user_id?: string | null
+        }
+        Relationships: []
       }
       job_alerts: {
         Row: {
@@ -1238,6 +1512,7 @@ export type Database = {
           salary_amount: number
           salary_currency: string
           salary_period: string
+          shop_photo_path: string | null
           skills: string[]
           title: string
           updated_at: string
@@ -1268,6 +1543,7 @@ export type Database = {
           salary_amount: number
           salary_currency?: string
           salary_period: string
+          shop_photo_path?: string | null
           skills?: string[]
           title: string
           updated_at?: string
@@ -1298,6 +1574,7 @@ export type Database = {
           salary_amount?: number
           salary_currency?: string
           salary_period?: string
+          shop_photo_path?: string | null
           skills?: string[]
           title?: string
           updated_at?: string
@@ -1330,6 +1607,7 @@ export type Database = {
           room_name: string
           scheduled_end_at: string | null
           started_at: string
+          stream_input_uid: string | null
           teacher_share: number
           thumbnail_path: string | null
           topic: string
@@ -1352,6 +1630,7 @@ export type Database = {
           room_name: string
           scheduled_end_at?: string | null
           started_at?: string
+          stream_input_uid?: string | null
           teacher_share?: number
           thumbnail_path?: string | null
           topic: string
@@ -1374,6 +1653,7 @@ export type Database = {
           room_name?: string
           scheduled_end_at?: string | null
           started_at?: string
+          stream_input_uid?: string | null
           teacher_share?: number
           thumbnail_path?: string | null
           topic?: string
@@ -1421,6 +1701,69 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      live_config: {
+        Row: {
+          created_at: string
+          customer: string | null
+          hls_url: string | null
+          id: number
+          input_id: string | null
+          rtmps_key: string | null
+          rtmps_url: string | null
+          whep_url: string | null
+          whip_url: string | null
+        }
+        Insert: {
+          created_at?: string
+          customer?: string | null
+          hls_url?: string | null
+          id: number
+          input_id?: string | null
+          rtmps_key?: string | null
+          rtmps_url?: string | null
+          whep_url?: string | null
+          whip_url?: string | null
+        }
+        Update: {
+          created_at?: string
+          customer?: string | null
+          hls_url?: string | null
+          id?: number
+          input_id?: string | null
+          rtmps_key?: string | null
+          rtmps_url?: string | null
+          whep_url?: string | null
+          whip_url?: string | null
+        }
+        Relationships: []
+      }
+      live_now: {
+        Row: {
+          hls_url: string | null
+          id: number
+          is_live: boolean
+          started_at: string | null
+          title: string | null
+          whep_url: string | null
+        }
+        Insert: {
+          hls_url?: string | null
+          id: number
+          is_live?: boolean
+          started_at?: string | null
+          title?: string | null
+          whep_url?: string | null
+        }
+        Update: {
+          hls_url?: string | null
+          id?: number
+          is_live?: boolean
+          started_at?: string | null
+          title?: string | null
+          whep_url?: string | null
+        }
+        Relationships: []
       }
       live_replays: {
         Row: {
@@ -1752,6 +2095,39 @@ export type Database = {
         }
         Relationships: []
       }
+      phone_verifications: {
+        Row: {
+          attempts: number
+          code: string
+          consumed: boolean
+          created_at: string
+          expires_at: string
+          id: string
+          phone: string
+          updated_at: string
+        }
+        Insert: {
+          attempts?: number
+          code: string
+          consumed?: boolean
+          created_at?: string
+          expires_at?: string
+          id?: string
+          phone: string
+          updated_at?: string
+        }
+        Update: {
+          attempts?: number
+          code?: string
+          consumed?: boolean
+          created_at?: string
+          expires_at?: string
+          id?: string
+          phone?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       post_comments: {
         Row: {
           body: string
@@ -1871,6 +2247,7 @@ export type Database = {
           created_at: string
           duration_seconds: number | null
           hashtags: string[]
+          hls_url: string | null
           id: string
           likes_count: number
           media_path: string
@@ -1882,6 +2259,7 @@ export type Database = {
           saves_count: number
           shares_count: number
           status: string
+          stream_uid: string | null
           thumbnail_path: string | null
           tv_category: string | null
           tv_order: number | null
@@ -1900,6 +2278,7 @@ export type Database = {
           created_at?: string
           duration_seconds?: number | null
           hashtags?: string[]
+          hls_url?: string | null
           id?: string
           likes_count?: number
           media_path: string
@@ -1911,6 +2290,7 @@ export type Database = {
           saves_count?: number
           shares_count?: number
           status?: string
+          stream_uid?: string | null
           thumbnail_path?: string | null
           tv_category?: string | null
           tv_order?: number | null
@@ -1929,6 +2309,7 @@ export type Database = {
           created_at?: string
           duration_seconds?: number | null
           hashtags?: string[]
+          hls_url?: string | null
           id?: string
           likes_count?: number
           media_path?: string
@@ -1940,6 +2321,7 @@ export type Database = {
           saves_count?: number
           shares_count?: number
           status?: string
+          stream_uid?: string | null
           thumbnail_path?: string | null
           tv_category?: string | null
           tv_order?: number | null
@@ -1992,6 +2374,7 @@ export type Database = {
         Row: {
           bio: string | null
           completed_projects: number
+          contact_email: string | null
           created_at: string
           display_name: string
           followers_count: number
@@ -2002,8 +2385,12 @@ export type Database = {
           likes_count: number
           payment_momo_number: string | null
           payment_momo_provider: string | null
+          phone_number: string | null
+          phone_verified: boolean
           photo_path: string | null
           posts_count: number
+          show_email_to: string
+          show_phone_to: string
           skill_score: number
           social_links: Json
           updated_at: string
@@ -2014,6 +2401,7 @@ export type Database = {
         Insert: {
           bio?: string | null
           completed_projects?: number
+          contact_email?: string | null
           created_at?: string
           display_name: string
           followers_count?: number
@@ -2024,8 +2412,12 @@ export type Database = {
           likes_count?: number
           payment_momo_number?: string | null
           payment_momo_provider?: string | null
+          phone_number?: string | null
+          phone_verified?: boolean
           photo_path?: string | null
           posts_count?: number
+          show_email_to?: string
+          show_phone_to?: string
           skill_score?: number
           social_links?: Json
           updated_at?: string
@@ -2036,6 +2428,7 @@ export type Database = {
         Update: {
           bio?: string | null
           completed_projects?: number
+          contact_email?: string | null
           created_at?: string
           display_name?: string
           followers_count?: number
@@ -2046,8 +2439,12 @@ export type Database = {
           likes_count?: number
           payment_momo_number?: string | null
           payment_momo_provider?: string | null
+          phone_number?: string | null
+          phone_verified?: boolean
           photo_path?: string | null
           posts_count?: number
+          show_email_to?: string
+          show_phone_to?: string
           skill_score?: number
           social_links?: Json
           updated_at?: string
@@ -2120,6 +2517,95 @@ export type Database = {
           },
         ]
       }
+      road_builders: {
+        Row: {
+          areas_known: string | null
+          created_at: string
+          impact_count: number
+          name: string | null
+          phone: string | null
+          status: string
+          total_routes: number
+          trust_score: number
+          user_id: string
+          verified_routes: number
+          volunteer_badge: string | null
+        }
+        Insert: {
+          areas_known?: string | null
+          created_at?: string
+          impact_count?: number
+          name?: string | null
+          phone?: string | null
+          status?: string
+          total_routes?: number
+          trust_score?: number
+          user_id: string
+          verified_routes?: number
+          volunteer_badge?: string | null
+        }
+        Update: {
+          areas_known?: string | null
+          created_at?: string
+          impact_count?: number
+          name?: string | null
+          phone?: string | null
+          status?: string
+          total_routes?: number
+          trust_score?: number
+          user_id?: string
+          verified_routes?: number
+          volunteer_badge?: string | null
+        }
+        Relationships: []
+      }
+      route_feedback: {
+        Row: {
+          correct: boolean
+          created_at: string
+          id: string
+          lat: number | null
+          lng: number | null
+          note: string | null
+          photo_path: string | null
+          reason: string | null
+          route_id: string
+          user_id: string
+        }
+        Insert: {
+          correct: boolean
+          created_at?: string
+          id?: string
+          lat?: number | null
+          lng?: number | null
+          note?: string | null
+          photo_path?: string | null
+          reason?: string | null
+          route_id: string
+          user_id: string
+        }
+        Update: {
+          correct?: boolean
+          created_at?: string
+          id?: string
+          lat?: number | null
+          lng?: number | null
+          note?: string | null
+          photo_path?: string | null
+          reason?: string | null
+          route_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "route_feedback_route_id_fkey"
+            columns: ["route_id"]
+            isOneToOne: false
+            referencedRelation: "verified_routes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       saved_jobs: {
         Row: {
           created_at: string
@@ -2167,6 +2653,42 @@ export type Database = {
           created_at?: string
           id?: string
           user_id?: string
+        }
+        Relationships: []
+      }
+      start_point_photos: {
+        Row: {
+          accuracy: number | null
+          community_name: string | null
+          created_at: string
+          created_by: string | null
+          id: string
+          journey_id: string | null
+          lat: number
+          lng: number
+          photo_url: string | null
+        }
+        Insert: {
+          accuracy?: number | null
+          community_name?: string | null
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          journey_id?: string | null
+          lat: number
+          lng: number
+          photo_url?: string | null
+        }
+        Update: {
+          accuracy?: number | null
+          community_name?: string | null
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          journey_id?: string | null
+          lat?: number
+          lng?: number
+          photo_url?: string | null
         }
         Relationships: []
       }
@@ -2416,6 +2938,239 @@ export type Database = {
         }
         Relationships: []
       }
+      teacher_applications: {
+        Row: {
+          age: number
+          created_at: string
+          current_school: string
+          facial_verification_url: string
+          ghana_card_back_url: string
+          ghana_card_front_url: string
+          hod_contact: string
+          id: string
+          match_score: number
+          name: string
+          personal_contact: string
+          reviewed_by: string | null
+          status: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          age: number
+          created_at?: string
+          current_school: string
+          facial_verification_url: string
+          ghana_card_back_url: string
+          ghana_card_front_url: string
+          hod_contact: string
+          id?: string
+          match_score?: number
+          name: string
+          personal_contact: string
+          reviewed_by?: string | null
+          status?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          age?: number
+          created_at?: string
+          current_school?: string
+          facial_verification_url?: string
+          ghana_card_back_url?: string
+          ghana_card_front_url?: string
+          hod_contact?: string
+          id?: string
+          match_score?: number
+          name?: string
+          personal_contact?: string
+          reviewed_by?: string | null
+          status?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      tutor_chat_messages: {
+        Row: {
+          content: string
+          created_at: string
+          id: string
+          role: string
+          user_id: string
+          web_sources: Json
+        }
+        Insert: {
+          content: string
+          created_at?: string
+          id?: string
+          role?: string
+          user_id: string
+          web_sources?: Json
+        }
+        Update: {
+          content?: string
+          created_at?: string
+          id?: string
+          role?: string
+          user_id?: string
+          web_sources?: Json
+        }
+        Relationships: []
+      }
+      tutor_settings: {
+        Row: {
+          avatar_url: string | null
+          free_trial_days: number
+          greeting: string
+          id: number
+          language: string
+          tutor_name: string
+          updated_at: string
+          voice_cadence: string
+          voice_phonetics: boolean
+          voice_pitch: number
+          voice_rate: number
+          voice_volume: number
+        }
+        Insert: {
+          avatar_url?: string | null
+          free_trial_days?: number
+          greeting?: string
+          id?: number
+          language?: string
+          tutor_name?: string
+          updated_at?: string
+          voice_cadence?: string
+          voice_phonetics?: boolean
+          voice_pitch?: number
+          voice_rate?: number
+          voice_volume?: number
+        }
+        Update: {
+          avatar_url?: string | null
+          free_trial_days?: number
+          greeting?: string
+          id?: number
+          language?: string
+          tutor_name?: string
+          updated_at?: string
+          voice_cadence?: string
+          voice_phonetics?: boolean
+          voice_pitch?: number
+          voice_rate?: number
+          voice_volume?: number
+        }
+        Relationships: []
+      }
+      tutor_subjects: {
+        Row: {
+          created_at: string
+          hidden: boolean
+          id: string
+          level: string
+          name: string
+          topics: string[]
+        }
+        Insert: {
+          created_at?: string
+          hidden?: boolean
+          id?: string
+          level: string
+          name: string
+          topics?: string[]
+        }
+        Update: {
+          created_at?: string
+          hidden?: boolean
+          id?: string
+          level?: string
+          name?: string
+          topics?: string[]
+        }
+        Relationships: []
+      }
+      tutor_subscriptions: {
+        Row: {
+          amount: number
+          created_at: string
+          currency: string
+          expires_at: string
+          id: string
+          reference: string | null
+          status: string
+          user_id: string
+        }
+        Insert: {
+          amount?: number
+          created_at?: string
+          currency?: string
+          expires_at?: string
+          id?: string
+          reference?: string | null
+          status?: string
+          user_id: string
+        }
+        Update: {
+          amount?: number
+          created_at?: string
+          currency?: string
+          expires_at?: string
+          id?: string
+          reference?: string | null
+          status?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      tv_ad_settings: {
+        Row: {
+          ad_interval_minutes: number
+          ads_per_break: number
+          folder_id: string
+          moving_text: string
+          moving_text_draft: string
+          moving_text_enabled: boolean
+          moving_text_position: string
+          moving_text_published: boolean
+          moving_text_speed: number
+          updated_at: string
+        }
+        Insert: {
+          ad_interval_minutes?: number
+          ads_per_break?: number
+          folder_id: string
+          moving_text?: string
+          moving_text_draft?: string
+          moving_text_enabled?: boolean
+          moving_text_position?: string
+          moving_text_published?: boolean
+          moving_text_speed?: number
+          updated_at?: string
+        }
+        Update: {
+          ad_interval_minutes?: number
+          ads_per_break?: number
+          folder_id?: string
+          moving_text?: string
+          moving_text_draft?: string
+          moving_text_enabled?: boolean
+          moving_text_position?: string
+          moving_text_published?: boolean
+          moving_text_speed?: number
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tv_ad_settings_folder_id_fkey"
+            columns: ["folder_id"]
+            isOneToOne: true
+            referencedRelation: "tv_folders"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       tv_channels: {
         Row: {
           category: string
@@ -2458,6 +3213,106 @@ export type Database = {
         }
         Relationships: []
       }
+      tv_folder_ads: {
+        Row: {
+          created_at: string
+          folder_id: string
+          id: string
+          is_published: boolean
+          title: string | null
+          updated_at: string
+          video_url: string
+        }
+        Insert: {
+          created_at?: string
+          folder_id: string
+          id?: string
+          is_published?: boolean
+          title?: string | null
+          updated_at?: string
+          video_url: string
+        }
+        Update: {
+          created_at?: string
+          folder_id?: string
+          id?: string
+          is_published?: boolean
+          title?: string | null
+          updated_at?: string
+          video_url?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tv_folder_ads_folder_id_fkey"
+            columns: ["folder_id"]
+            isOneToOne: false
+            referencedRelation: "tv_folders"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      tv_folders: {
+        Row: {
+          created_at: string
+          id: string
+          label: string
+        }
+        Insert: {
+          created_at?: string
+          id: string
+          label: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          label?: string
+        }
+        Relationships: []
+      }
+      user_free_access: {
+        Row: {
+          classroom_raise: boolean
+          created_at: string
+          granted_by: string | null
+          jobs_contact: boolean
+          jobs_post: boolean
+          talent_post: boolean
+          tutor_unlimited: boolean
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          classroom_raise?: boolean
+          created_at?: string
+          granted_by?: string | null
+          jobs_contact?: boolean
+          jobs_post?: boolean
+          talent_post?: boolean
+          tutor_unlimited?: boolean
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          classroom_raise?: boolean
+          created_at?: string
+          granted_by?: string | null
+          jobs_contact?: boolean
+          jobs_post?: boolean
+          talent_post?: boolean
+          tutor_unlimited?: boolean
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_free_access_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: true
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       user_roles: {
         Row: {
           created_at: string
@@ -2479,14 +3334,308 @@ export type Database = {
         }
         Relationships: []
       }
+      verified_routes: {
+        Row: {
+          builder_name: string | null
+          created_at: string
+          created_by: string | null
+          distance_km: number | null
+          end_lat: number
+          end_lng: number
+          helpful_count: number
+          id: string
+          local_name: string | null
+          motorable: boolean
+          note: string | null
+          path_type: string
+          review_decision: string | null
+          reviewed_at: string | null
+          source: string
+          source_route_id: string | null
+          start_lat: number
+          start_lng: number
+          status: string
+          times_used: number
+          trace: Json
+          trust_score: number
+          unhelpful_count: number
+        }
+        Insert: {
+          builder_name?: string | null
+          created_at?: string
+          created_by?: string | null
+          distance_km?: number | null
+          end_lat: number
+          end_lng: number
+          helpful_count?: number
+          id?: string
+          local_name?: string | null
+          motorable?: boolean
+          note?: string | null
+          path_type?: string
+          review_decision?: string | null
+          reviewed_at?: string | null
+          source?: string
+          source_route_id?: string | null
+          start_lat: number
+          start_lng: number
+          status?: string
+          times_used?: number
+          trace?: Json
+          trust_score?: number
+          unhelpful_count?: number
+        }
+        Update: {
+          builder_name?: string | null
+          created_at?: string
+          created_by?: string | null
+          distance_km?: number | null
+          end_lat?: number
+          end_lng?: number
+          helpful_count?: number
+          id?: string
+          local_name?: string | null
+          motorable?: boolean
+          note?: string | null
+          path_type?: string
+          review_decision?: string | null
+          reviewed_at?: string | null
+          source?: string
+          source_route_id?: string | null
+          start_lat?: number
+          start_lng?: number
+          status?: string
+          times_used?: number
+          trace?: Json
+          trust_score?: number
+          unhelpful_count?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "verified_routes_source_route_id_fkey"
+            columns: ["source_route_id"]
+            isOneToOne: false
+            referencedRelation: "verified_routes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      wallet_packages: {
+        Row: {
+          amount: number
+          areas: string[]
+          created_at: string
+          duration_days: number
+          id: string
+          is_active: boolean
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          amount: number
+          areas?: string[]
+          created_at?: string
+          duration_days: number
+          id?: string
+          is_active?: boolean
+          title?: string
+          updated_at?: string
+        }
+        Update: {
+          amount?: number
+          areas?: string[]
+          created_at?: string
+          duration_days?: number
+          id?: string
+          is_active?: boolean
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      wallet_passes: {
+        Row: {
+          amount: number
+          areas: string[]
+          created_at: string
+          expires_at: string
+          id: string
+          package_id: string | null
+          reference: string
+          starts_at: string
+          title: string
+          user_id: string
+        }
+        Insert: {
+          amount: number
+          areas?: string[]
+          created_at?: string
+          expires_at: string
+          id?: string
+          package_id?: string | null
+          reference: string
+          starts_at?: string
+          title: string
+          user_id: string
+        }
+        Update: {
+          amount?: number
+          areas?: string[]
+          created_at?: string
+          expires_at?: string
+          id?: string
+          package_id?: string | null
+          reference?: string
+          starts_at?: string
+          title?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "wallet_passes_package_id_fkey"
+            columns: ["package_id"]
+            isOneToOne: false
+            referencedRelation: "wallet_packages"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "wallet_passes_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      wassce_attempts: {
+        Row: {
+          created_at: string
+          id: string
+          is_correct: boolean
+          question_id: string | null
+          selected_option: string
+          subject: string
+          time_taken_seconds: number
+          topic: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          is_correct?: boolean
+          question_id?: string | null
+          selected_option: string
+          subject: string
+          time_taken_seconds?: number
+          topic?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          is_correct?: boolean
+          question_id?: string | null
+          selected_option?: string
+          subject?: string
+          time_taken_seconds?: number
+          topic?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "wassce_attempts_question_id_fkey"
+            columns: ["question_id"]
+            isOneToOne: false
+            referencedRelation: "wassce_questions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      wassce_questions: {
+        Row: {
+          correct_answer: string
+          created_at: string
+          created_by: string | null
+          explanation: string
+          id: string
+          options: Json
+          question_text: string
+          source: string
+          subject: string
+          topic: string
+          updated_at: string
+          year: number | null
+        }
+        Insert: {
+          correct_answer: string
+          created_at?: string
+          created_by?: string | null
+          explanation?: string
+          id?: string
+          options?: Json
+          question_text: string
+          source?: string
+          subject: string
+          topic: string
+          updated_at?: string
+          year?: number | null
+        }
+        Update: {
+          correct_answer?: string
+          created_at?: string
+          created_by?: string | null
+          explanation?: string
+          id?: string
+          options?: Json
+          question_text?: string
+          source?: string
+          subject?: string
+          topic?: string
+          updated_at?: string
+          year?: number | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
+      adjust_live_viewer_count: {
+        Args: { _delta: number; _session_id: string }
+        Returns: number
+      }
+      can_view_contact: {
+        Args: { _field: string; _owner_id: string; _viewer_id: string }
+        Returns: boolean
+      }
       can_view_replay: {
         Args: { _replay_id: string; _user_id: string }
         Returns: boolean
+      }
+      confirm_community_name: {
+        Args: { _id: string; _photo: string; _voice: string }
+        Returns: {
+          confirmations: number
+          verified: boolean
+        }[]
+      }
+      confirm_route: {
+        Args: {
+          _correct: boolean
+          _lat: number
+          _lng: number
+          _note: string
+          _route_id: string
+        }
+        Returns: string
+      }
+      get_visible_contact: {
+        Args: { _owner_id: string }
+        Returns: {
+          email: string
+          phone: string
+        }[]
       }
       has_paid_job_post: { Args: { _user_id: string }; Returns: boolean }
       has_role: {
@@ -2514,9 +3663,97 @@ export type Database = {
         Returns: boolean
       }
       is_super_admin: { Args: never; Returns: boolean }
+      match_ges_vault_jhs: {
+        Args: {
+          match_count?: number
+          match_grade?: string
+          match_subject?: string
+          query_embedding: string
+          query_text?: string
+        }
+        Returns: {
+          content: string
+          grade: string
+          id: string
+          indicator: string
+          similarity: number
+          source_text: string
+          source_type: string
+          strand: string
+          sub_strand: string
+          subject: string
+        }[]
+      }
+      match_vault: {
+        Args: {
+          match_count?: number
+          match_grade?: string
+          match_level?: string
+          query_embedding: string
+          query_text?: string
+        }
+        Returns: {
+          content: string
+          grade: string
+          id: string
+          indicator: string
+          level: string
+          similarity: number
+          source_text: string
+          source_type: string
+          strand: string
+          sub_strand: string
+          subject: string
+        }[]
+      }
+      nearby_pending_routes: {
+        Args: { _lat: number; _lng: number }
+        Returns: {
+          builder_name: string
+          distance_km: number
+          end_lat: number
+          end_lng: number
+          id: string
+          start_lat: number
+          start_lng: number
+          trace: Json
+        }[]
+      }
       owns_replay: {
         Args: { _replay_id: string; _user_id: string }
         Returns: boolean
+      }
+      report_route: {
+        Args: {
+          _helpful: boolean
+          _lat: number
+          _lng: number
+          _note: string
+          _photo: string
+          _reason: string
+          _route_id: string
+        }
+        Returns: string
+      }
+      review_route: {
+        Args: { _keep: boolean; _route_id: string }
+        Returns: string
+      }
+      reviewed_at_cutoff: { Args: { _route_id: string }; Returns: string }
+      routes_for_review: {
+        Args: never
+        Returns: {
+          builder_name: string
+          created_at: string
+          helpful_count: number
+          id: string
+          local_name: string
+          path_type: string
+          reports: Json
+          source: string
+          trace: Json
+          unhelpful_count: number
+        }[]
       }
       unlock_talent_contact: {
         Args: { _talent_profile_id: string }
