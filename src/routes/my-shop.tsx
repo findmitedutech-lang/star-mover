@@ -159,6 +159,7 @@ function RegisterForm({ userId, onCreated }: { userId: string; onCreated: () => 
     }
   };
 
+  const { amount: regAmount, waived: regWaived } = useAppPrice("shop_registration");
   return (
     <section className="space-y-4 rounded-2xl bg-card p-4 shadow-sm">
       <div>
@@ -221,7 +222,7 @@ function RegisterForm({ userId, onCreated }: { userId: string; onCreated: () => 
         <input type="file" accept="image/*" className="hidden" onChange={(e) => setPhoto(e.target.files?.[0] ?? null)} />
       </label>
       <Button className="w-full" onClick={() => void save()} disabled={saving}>
-        {saving ? "Saving…" : "Continue to payment"}
+        {saving ? "Saving…" : `Continue to register — ${regWaived ? "Free" : `GH₵ ${regAmount}`}`}
       </Button>
     </section>
   );
