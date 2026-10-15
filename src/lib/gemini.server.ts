@@ -1,7 +1,7 @@
 /** Server-only helpers for the school's own Google Gemini key. Works with both AQ. and AIza keys. */
 
 const BASE = "https://generativelanguage.googleapis.com/v1beta";
-export const GEMINI_TRANSCRIBE_MODEL = "gemini-3.5-transcribe";
+export const GEMINI_VOICE_MODEL = "gemini-3.5-flash-lite";
 export const GEMINI_IMAGE_MODEL = "gemini-3.1-flash-image";
 export const GEMINI_EMBED_MODEL = "gemini-embedding-001";
 /** Vault vectors are stored as vector(1536). */
