@@ -43,7 +43,8 @@ export function useAppSections() {
   useEffect(() => {
     void load();
     const channel = supabase
-      .channel("app-sections")
+      // Unique name per hook instance: several screens use this hook at once.
+      .channel(`app-sections-${Math.random().toString(36).slice(2)}`)
       .on("postgres_changes", { event: "*", schema: "public", table: "app_sections" }, () => {
         void load();
       })
