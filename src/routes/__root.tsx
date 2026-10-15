@@ -150,6 +150,32 @@ function RootComponent() {
     void navigator.serviceWorker.register("/sw.js").catch(() => undefined);
   }, []);
 
+  useEffect(() => {
+    // After a new publish, old page files disappear: reload once to get the new version.
+    const isChunkError = (m: string) =>
+      /dynamically imported module|Importing a module script failed|error loading dynamically/i.test(m);
+    const reloadOnce = () => {
+      const key = "fm-chunk-reload";
+      if (Date.now() - Number(sessionStorage.getItem(key) || 0) < 10000) return;
+      sessionStorage.setItem(key, String(Date.now()));
+      window.location.reload();
+    };
+    const onPreload = (e: Event) => {
+      e.preventDefault();
+      reloadOnce();
+    };
+    const onRejection = (e: PromiseRejectionEvent) => {
+      const r = e.reason as { message?: string } | undefined;
+      if (isChunkError(String(r?.message ?? r ?? ""))) reloadOnce();
+    };
+    window.addEventListener("vite:preloadError", onPreload);
+    window.addEventListener("unhandledrejection", onRejection);
+    return () => {
+      window.removeEventListener("vite:preloadError", onPreload);
+      window.removeEventListener("unhandledrejection", onRejection);
+    };
+  }, []);
+
 
   return (
     <QueryClientProvider client={queryClient}>
