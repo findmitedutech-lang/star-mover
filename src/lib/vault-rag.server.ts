@@ -1,6 +1,5 @@
 /** Server-only GES vault retrieval. Never imported from client code. */
 
-const EMBED_MODEL = "openai/text-embedding-3-small";
 
 export interface VaultChunk {
   id: string;
@@ -26,20 +25,8 @@ export interface VaultRowLike {
 
 /** Turns text into the number list the vault search uses to find close matches. */
 export async function embedTexts(texts: string[]): Promise<number[][]> {
-  const key = process.env["LOVABLE_API_KEY"];
-  if (!key) throw new Error("The vault search is not set up yet");
-  const res = await fetch("https://ai.gateway.lovable.dev/v1/embeddings", {
-    method: "POST",
-    headers: { Authorization: `Bearer ${key}`, "Content-Type": "application/json" },
-    body: JSON.stringify({ model: EMBED_MODEL, input: texts }),
-  });
-  if (res.status === 429) throw new Error("Too many requests right now. Try again in a moment.");
-  if (res.status === 402) throw new Error("The vault has run out of credit. Please top up.");
-  if (!res.ok) throw new Error("The vault search could not run right now");
-  const body = (await res.json()) as { data?: { embedding: number[] }[] };
-  const list = body.data ?? [];
-  if (list.length !== texts.length) throw new Error("The vault search could not run right now");
-  return list.map((d) => d.embedding);
+  const { geminiEmbed } = await import("@/lib/gemini.server");
+  return geminiEmbed(texts);
 }
 
 export function rowText(r: VaultRowLike) {

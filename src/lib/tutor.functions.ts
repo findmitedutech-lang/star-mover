@@ -436,42 +436,31 @@ export const transcribeVoiceNote = createServerFn({ method: "POST" })
     z.object({ audio: z.string().min(10).max(14_000_000), mime: z.string().max(100) }).parse(d),
   )
   .handler(async ({ data }) => {
-    const key = process.env["LOVABLE_API_KEY"];
-    if (!key) throw new Error("Voice is not configured");
+    const { geminiKey, geminiPost, GEMINI_VOICE_MODEL } = await import("@/lib/gemini.server");
+    const key = geminiKey("Voice is not configured");
     const base = data.audio.includes(",") ? data.audio.split(",")[1]! : data.audio;
-    const bytes = Uint8Array.from(atob(base), (c) => c.charCodeAt(0));
     const type = data.mime.startsWith("audio/") ? data.mime.split(";")[0]! : "audio/webm";
-    const ext = type.includes("mp4") || type.includes("aac") ? "m4a" : type.includes("ogg") ? "ogg" : "webm";
-    const form = new FormData();
-    form.append("model", "google/gemini-3.5-transcribe");
-    form.append("file", new Blob([bytes], { type }), `note.${ext}`);
-    form.append("response_format", "json");
-    form.append("stream", "true");
-    const res = await fetch("https://ai.gateway.lovable.dev/v1/audio/transcriptions", {
-      method: "POST",
-      headers: { Authorization: `Bearer ${key}` },
-      body: form,
-    });
+    const res = await geminiPost(
+      `models/${GEMINI_VOICE_MODEL}:generateContent`,
+      {
+        contents: [
+          {
+            parts: [
+              { inlineData: { mimeType: type, data: base } },
+              { text: "Transcribe this student's voice note exactly as spoken (English, Ghanaian Pidgin or Twi). Return only the spoken words, nothing else." },
+            ],
+          },
+        ],
+      },
+      key,
+    );
     if (!res.ok) {
       const msg = await res.text().catch(() => "");
-      if (res.status === 402) throw new Error("AI credits are used up. Please top up to continue.");
-      if (res.status === 429) throw new Error("Too many requests. Try again shortly.");
+      if (res.status === 429 || res.status === 503) throw new Error("Too many requests. Try again shortly.");
       throw new Error(`Could not understand the voice note (${res.status}) ${msg.slice(0, 120)}`);
     }
-    const raw = await res.text();
-    let text = "";
-    let done = "";
-    for (const line of raw.split("\n")) {
-      if (!line.startsWith("data:")) continue;
-      const payload = line.slice(5).trim();
-      if (!payload || payload === "[DONE]") continue;
-      try {
-        const ev = JSON.parse(payload) as { type?: string; delta?: string; text?: string };
-        if (ev.type === "transcript.text.delta" && ev.delta) text += ev.delta;
-        if (ev.type === "transcript.text.done" && ev.text) done = ev.text;
-      } catch {
-        /* ignore partial lines */
-      }
-    }
+    const body = (await res.json()) as { candidates?: { content?: { parts?: { text?: string }[] } }[] };
+    const done = (body.candidates?.[0]?.content?.parts ?? []).map((x) => x.text ?? "").join("");
+    const text = "";
     return { text: (done || text).trim() };
   });
