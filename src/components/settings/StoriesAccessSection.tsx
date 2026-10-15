@@ -40,7 +40,8 @@ export function StoriesAccessSection() {
     setBusy(true);
     const { error } = await supabase
       .from("app_sections")
-      .upsert({ id: "stories_tab", is_hidden: !value, is_locked: false });
+      .update({ is_hidden: !value })
+      .eq("id", "stories_tab");
     setBusy(false);
     if (error) toast.error("Could not change Stories");
     else toast.success(value ? "Stories is now live for everyone" : "Stories is private again");
