@@ -10,6 +10,7 @@ import { useStoriesInnerTab, type StoriesInnerTab } from "@/lib/stories-nav";
 import { cn } from "@/lib/utils";
 import { AmaClassEndListener } from "@/components/tutor/AmaClassEndListener";
 import { hasPendingNav } from "@/lib/share-location";
+import { useStoriesAccess } from "@/lib/stories-access";
 
 const TABS = [
   { to: "/chat", label: "Chat", icon: MessageCircle },
@@ -66,13 +67,14 @@ function BottomNav() {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
   const { profile } = useAuth();
   const { count: unreadChats } = useUnreadChatCount(profile?.id);
+  const { allowed: storiesAllowed } = useStoriesAccess();
 
   useNotifications(profile?.id);
 
   return (
     <BottomNavFrame>
       <ul className="flex min-w-0 flex-1 items-stretch">
-        {TABS.map(({ to, label, icon: Icon }) => {
+        {TABS.filter((t) => t.to !== "/" || storiesAllowed).map(({ to, label, icon: Icon }) => {
           const active = to === "/" ? pathname === "/" : pathname.startsWith(to);
           return (
             <li key={to} className="flex-1">
@@ -135,6 +137,7 @@ export function AppShell({
   const { loading, session, profile } = useAuth();
   const navigate = useNavigate();
   const pathname = useRouterState({ select: (s) => s.location.pathname });
+  const stories = useStoriesAccess();
 
   useEffect(() => {
     if (loading) return;
@@ -159,7 +162,15 @@ export function AppShell({
     }
   }, [loading, pathname, navigate]);
 
+  // Stories is private until admin publishes it: unapproved users go to Jobs.
+  useEffect(() => {
+    if (pathname === "/" && !stories.loading && !stories.allowed) {
+      void navigate({ to: "/jobs", search: { tab: "jobs" }, replace: true });
+    }
+  }, [pathname, stories.loading, stories.allowed, navigate]);
+
   if (loading || !session || !profile) return <AppSkeleton />;
+  if (pathname === "/" && (stories.loading || !stories.allowed)) return <AppSkeleton />;
 
   const isStories = pathname === "/";
 

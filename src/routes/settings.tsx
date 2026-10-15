@@ -13,6 +13,7 @@ import { SettingsSection } from "@/components/settings/SettingsSection";
 import { ContactPrivacySection } from "@/components/settings/ContactPrivacySection";
 import { ApplicationsSection } from "@/components/settings/ApplicationsSection";
 import { PricingSection } from "@/components/settings/PricingSection";
+import { StoriesAccessSection } from "@/components/settings/StoriesAccessSection";
 import { TutorSettingsSection } from "@/components/settings/TutorSettingsSection";
 import { AmaVoiceTuning } from "@/components/settings/AmaVoiceTuning";
 import { Button } from "@/components/ui/button";
@@ -105,6 +106,8 @@ function SettingsPage() {
       <ContactPrivacySection />
 
       <ApplicationsSection />
+
+      {isAdmin ? <StoriesAccessSection /> : null}
 
       {isAdmin ? <PricingSection /> : null}
 
